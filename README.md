@@ -15,6 +15,21 @@ Bread app is a tool that allows you to easily record experiments in bread in a m
 
 #### Features
 
+**client**
+* Users
+	* register a new user
+	* log in/log out
+	* edit user data(email, password)
+* Add bread recipes
+* Update, Delete recipes
+* View list of all recipes(data table view)
+	* filter by ingredients
+	* sort by various params(date, rating)
+* **Dynamic plot:** generate a scatter-plot to visualize how results change when variables are tweaked.
+	* *e.g. x axis is amount of yeast(tsp), y axis is star rating, data-set is all recipes that have 1.5tsp salt.
+	* visualize multiple datasets on one chart.
+* Create a graph to visualize what ingredient tweaks have been tried
+
 **recipes api**
 * Add new recipes to the database
 * Update recipes in DB
@@ -95,6 +110,7 @@ either ONE-TO-MANY or MANY-TO-MANY: one recipe will always have many procedures,
 - `hashedPassword)`: str (bcrypt)
 
 
+---
 
 ---
 
