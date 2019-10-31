@@ -12,6 +12,25 @@ There are a lot of variables to consider when baking your own bread: ingredient 
 
 Bread app is a tool that allows you to easily record experiments in bread in a more-or-less scientific way, and to visualize how different ingredients and procedures interact with each-other.
 
+
+#### Features
+
+**recipes api**
+* Add new recipes to the database
+* Update recipes in DB
+* Delete recipes from DB
+* Query recipes on various parameters:
+	* by ingredients in that recipe
+	* by creator
+	* by rating
+	* etc.
+
+**users api**
+*While by design the application will only have one user, I want to include a total authentication flow - for practice.*
+* Create new users securely
+	* hash passwords
+* Login and log out with tokens
+
 #### Stack
 
 ##### Front-End
@@ -123,3 +142,12 @@ I found these two resources in the FastAPI documentation:
 I think I will be able to constrain my `procedure` types using `Enum`, so that only certain types of procedures can be created, and then I can do something to restrict what fields are available for each type (e.g. a bake time doesn't make sense as a field unless the procedure type is bake)
 
 I think i can define `ingredients` simply as a nested pydantic model. I'm not sure how this will translate into the database, but I'll cross that bridge when I come to it.
+
+*(several hours later...)*
+
+After thinking about it some more, I don't think that there will be a problem with `ingredients`. My initial concern was: if an ingredient is updated, how will those updates be propogated to all recipes using that ingredient so that data integrity is maintained? Here's what I realized:
+
+1. While I want to be able to query recipes by the ingredients within them, the *quantity* of an ingredient within a recipe is specific to that recipe. What I really wanted to avoid was, for example, having a recipe that had `yeast` as an ingredient, and another recipe that had `active dry yeast` as an ingredient, and not being able to retrieve both of those recipes when querying for recipes containing yeast; The solution to this is to retrieve a list of all unique ingredients used in all recipes, and then use this list when adding ingredients to new recipes.
+2. Suppose that, at some point, I change the brand of flour that I am using, and want to update my `flour` document with the new brand. While all future recipes would use the new brand, *old recipes would still have used the old brand*. Therefor, I would not want to update any recipes' ingredients if an ingredient was changed.
+
+It occurs to me now that these problems were never really problems, but were actually features of a document data-store over a relational database. I think I just need more time to get into the mindset of working with document data-stores.
