@@ -12,6 +12,7 @@ There are a lot of variables to consider when baking your own bread: ingredient 
 
 Bread app is a tool that allows you to easily record experiments in bread in a more-or-less scientific way, and to visualize how different ingredients and procedures interact with each-other.
 
+
 #### Data
 
 Data will be stored in a **document data-store** for the following reasons:
@@ -24,31 +25,31 @@ I am evaluating **[ArangoDB](https://www.arangodb.com/)** as my document databas
 
 **RECIPE SCHEMA**
 
-- id
-- creator_id
-- date
-- ingredients [list]
-  - ingredient<sup>1</sup>
-    - name
-    - quantity
-    - unit
+- `id`: _key
+- `creator`: _key
+- `dateCreated`: date
+- `ingredients`: list
+  - `ingredient`: obj<sup>1</sup>
+    - `name`: str
+    - `quantity`: float
+    - `unit`: str (or convert everything to g or mL before saving)
     - _nutritional macros_
-- procedures [list]
-  - procedure: [mix, proof, bake]<sup>2</sup>
-    - time
-    - temperature (Optional)
-    - details
-- shape
-- yield
-- results
-  - rating[int out of 5]
-  - image
-  - notes
+- `procedures`: list
+  - `procedure`: obj (options: mix, proof, bake)<sup>2</sup>
+    - `time`: int (min, required for bake and proof)
+    - `temperature`: int (deg F, required for bake and proof)
+    - `details`: str
+- `shape`: str
+- `yield`: int
+- `results`: obj
+  - `rating`: int (min=0, max=5)
+  - `image`: url
+  - `notes`: str
 
 **<sup>1</sup>ingredient:**
 nested schema - describes a single ingredient.
 MANY-TO-MANY: one recipe can have many ingredients, one ingredient can be used in many recipes
-Optionally, include basic macro-nutrient information, such as calories, **or** a link to connect this ingredient to some external nutritional database.
+_Optionally_, include basic macro-nutrient information, such as calories, **or** a link to connect this ingredient to some external nutritional database.
 
 **<sup>2</sup>procedure:**
 nested schema - describes a step for making the bread.
@@ -58,9 +59,9 @@ either ONE-TO-MANY or MANY-TO-MANY: one recipe will always have many procedures,
 
 **USER SCHEMA**
 
-- id
-- email
-- hashed password(bcrypt)
+- `id`: int
+- `email`: str
+- `hashedPassword)`: str (bcrypt)
 
 
 
@@ -89,7 +90,24 @@ I decided to start with the data models since that's the core of the whole thing
 
 
 **TODO TOMORROW:**
-- [ ] Data models: take sketches and turn into real, arangodb models(see resource above)
-- [ ] Design doc: describe data models/schemas
+* [x] Data models: take sketches and turn into real, arangodb models(see resource above)
+* [x] Design doc: describe data models/schemas
 - [ ] Design doc: describe interactions/flows/features of app (things it will do, high level)
 - [ ] Design doc: describe technologies that will be used in project and why.
+
+
+#### 10/31/19
+
+> Problem: A `recipe` can contain a list of `ingredient`s; One `ingredient` can be included in multiple `recipe`s. How do I create this relationship in ArangoDB?
+
+> Problem: A `recipe` can contain a list of `procedure`s; procedures can be one of a finite number of types(e.g. mix, proof, bake) - how do I enforce this, and disallow arbitrary new procedure types?
+
+I found two articles yesterday that looked like they may provide some insight into how to solve these problems, which I then read today. Neither was all that helpful. I tried to find some more information about modeling relationships in a NOSQL database, but didn't really find anything useful. I've learned that sometimes, if you don't find any answers, it's because you are asking the wrong question. I think that these problems may be application-level problems rather than database-level problems.
+
+I found these two resources in the FastAPI documentation:
+* https://fastapi.tiangolo.com/tutorial/body-nested-models/
+* https://fastapi.tiangolo.com/tutorial/path-params/#predefined-values
+
+I think I will be able to constrain my `procedure` types using `Enum`, so that only certain types of procedures can be created, and then I can do something to restrict what fields are available for each type (e.g. a bake time doesn't make sense as a field unless the procedure type is bake)
+
+I think i can define `ingredients` simply as a nested pydantic model. I'm not sure how this will translate into the database, but I'll cross that bridge when I come to it.
