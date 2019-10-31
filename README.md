@@ -12,6 +12,18 @@ There are a lot of variables to consider when baking your own bread: ingredient 
 
 Bread app is a tool that allows you to easily record experiments in bread in a more-or-less scientific way, and to visualize how different ingredients and procedures interact with each-other.
 
+#### Stack
+
+##### Front-End
+
+* **[Vue.js 2.0](https://vuejs.org/):** JavaScript framework
+
+##### Back-End
+
+* **[FastAPI](https://fastapi.tiangolo.com/):** Python RESTful API framework
+* **[ArangoDB](https://www.arangodb.com/):** Multi-model NOSQL database
+
+
 
 #### Data
 
