@@ -12,41 +12,30 @@ Bread app is a tool that allows you to easily record experiments in bread in a m
 
 **Client**
 
-* Users
-	- Register new user
-	- Log in/log out
-	- edit user data(email, password)
-* Create new bread recipes
-* Update, delete bread recipes
-* View list of all bread recipes
-	- filter by ingredients, other params
-	- sort by various params(date created, rating)
-* Generate scatter-plot charts from bread queries
+- Users - Register new user - Log in/log out - edit user data(email, password)
+- Create new bread recipes
+- Update, delete bread recipes
+- View list of all bread recipes - filter by ingredients, other params - sort by various params(date created, rating)
+- Generate scatter-plot charts from bread queries
 
 **Recipes API**
 
-* Create, Update, Delete recipes in document database
-* Query recipes using query strings
-	- by ingredients in that recipe
-	- by creator
-	- by rating
-	- etc.
-	
+- Create, Update, Delete recipes in document database
+- Query recipes using query strings - by ingredients in that recipe - by creator - by rating - etc.
+
 **Users API**
 
-*While, by design, the application will only have one user - and as such not require login, logout, or authentication - I want to include a full authentication flow for practice.*
+_While, by design, the application will only have one user - and as such not require login, logout, or authentication - I want to include a full authentication flow for practice._
 
-* Create new users
-	- Hash passwords with BCrypt
-* Log in and log out with tokens
+- Create new users - Hash passwords with BCrypt
+- Log in and log out with tokens
 
 #### Optional
 
 **Client**
 
-* Plot multiple data sets on a single chart, to compare
-* Export recipes to MyFitnessPal
-
+- Plot multiple data sets on a single chart, to compare
+- Export recipes to MyFitnessPal
 
 ### Architecture
 
@@ -54,11 +43,19 @@ Bread app is a tool that allows you to easily record experiments in bread in a m
 
 ##### Front-End
 
-* **[Vue.js 2.0](https://vuejs.org/):** My prefered JavaScript framework for web apps
+- **[Vue.js 2.0](https://vuejs.org/):** My prefered JavaScript framework for web apps
 
 ##### Back-End
 
-* **[FastAPI](https://fastapi.tiangolo.com/):** Python RESTful API framework
+###### _Dev Dependencies_
+
+- [pipenv](https://pipenv.readthedocs.io/en/latest/)
+- [black](https://github.com/psf/black)
+- [iSort](https://github.com/timothycrosley/isort)
+- [mypy](http://www.mypy-lang.org/)
+- [flake8](http://flake8.pycqa.org/en/latest/index.html#)
+
+- **[FastAPI](https://fastapi.tiangolo.com/):** Python RESTful API framework
 
 ###### Database
 
@@ -70,15 +67,14 @@ Data will be stored in a **document data-store** for the following reasons:
 
 I am evaluating **[ArangoDB](https://www.arangodb.com/)** as my document database for this project.
 
-
 #### Data Models
 
 <!-- TODO: REPLACE WITH REAL JSON -->
 
 **RECIPE**
 
-- `id`: _key
-- `creator`: _key
+- `id`: \_key
+- `creator`: \_key
 - `dateCreated`: date
 - `ingredients`: list
   - `ingredient`: obj
@@ -103,7 +99,6 @@ I am evaluating **[ArangoDB](https://www.arangodb.com/)** as my document databas
 - `id`: int
 - `email`: str
 - `hashedPassword)`: str (bcrypt)
-
 
 ### Views
 
