@@ -26,6 +26,7 @@ I decided to start with the data models since that's the core of the whole thing
 * [x] Design doc: describe interactions/flows/features of app (things it will do, high level)
 * [x] Design doc: describe technologies that will be used in project and why.
 
+---
 
 #### 10/31/19
 
@@ -57,18 +58,25 @@ I found [this excellent article on Dev.to](https://dev.to/guin/a-plan-for-planni
 
 I moved this dev journal, as well as the design doc, to their own files; the `README` will be a traditional readme with information that is more relevant to the end user and outside parties.
 
+---
+
 #### 11/1/19
 
 > TODO  
-- [ ] README-Driven Development: sketch in as much of a README as you can
-- [ ] Prepare python development environment: decide on CI tools, linters, etc. (document in design doc)
-- [ ] Add cards to GitHub project board for REST API
-- [ ] Start coding: TDD based on cards
+> - [x] README-Driven Development: sketch in as much of a README as you can
+> - [ ] Prepare python development environment: decide on CI tools, linters, etc. (document in design doc)
+> - [ ] Add cards to GitHub project board for REST API
+> - [ ] Start coding: TDD based on cards
 
 > **Python tooling:**  
-* https://sourcery.ai/blog/python-best-practices/
-* https://realpython.com/python-continuous-integration
-* https://realpython.com/python-code-quality/
-* https://realpython.com/documenting-python-code/
-* https://realpython.com/python-comments-guide/
-* https://hackernoon.com/setting-up-a-python-development-environment-in-atom-466d7f48e297
+> * https://sourcery.ai/blog/python-best-practices/
+> * https://realpython.com/python-continuous-integration
+> * https://realpython.com/python-code-quality/
+> * https://realpython.com/documenting-python-code/
+> * https://realpython.com/python-comments-guide/
+> * https://hackernoon.com/setting-up-a-python-development-environment-in-atom-466d7f48e297
+
+Readme template generator: https://github.com/kefranabg/readme-md-generator
+
+There wasn't a whole lot I could add to the readme at this stage. I will add instructions for installing and running as soon as I know how those will be done.
+
