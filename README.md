@@ -3,23 +3,32 @@
 
 > Data-driven baking application
 
-## Install
+## Quick-start
+
+### Prerequisites
+
+<!-- must have docker installed to run -->
+<!-- must have pipenv installed to develop -->
+
+### Install
 
 ```sh
 pipenv install
 ```
 
-## Usage
+### Usage
 
 ```sh
 pipenv run ?
 ```
 
-## Run tests
+### Run tests
 
 ```sh
 pipenv run pytest
 ```
+
+---
 
 ## Author
 
