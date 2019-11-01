@@ -4,62 +4,69 @@ Use data to scientifically iterate your bread recipes and procedures!
 
 ---
 
-## Design Doc?
+# Design Doc
 
-<!-- raison d'être -->
+### Raison D'être
 
 There are a lot of variables to consider when baking your own bread: ingredient ratios, proof time, oven temperature, mixing technique - even whether you add water to flour or add flour to water. Each of these variables can have a significant impact on the final bread. When experimenting with new bread recipes, it is easy to lose track of what changes you have tried and what the result was of that change.
 
 Bread app is a tool that allows you to easily record experiments in bread in a more-or-less scientific way, and to visualize how different ingredients and procedures interact with each-other.
 
+### MVP Features
 
-#### Features
+#### Core
 
-**client**
+**Client**
+
 * Users
-	* register a new user
-	* log in/log out
-	* edit user data(email, password)
-* Add bread recipes
-* Update, Delete recipes
-* View list of all recipes(data table view)
-	* filter by ingredients
-	* sort by various params(date, rating)
-* **Dynamic plot:** generate a scatter-plot to visualize how results change when variables are tweaked.
-	* *e.g. x axis is amount of yeast(tsp), y axis is star rating, data-set is all recipes that have 1.5tsp salt.
-	* visualize multiple datasets on one chart.
-* Create a graph to visualize what ingredient tweaks have been tried
+	- Register new user
+	- Log in/log out
+	- edit user data(email, password)
+* Create new bread recipes
+* Update, delete bread recipes
+* View list of all bread recipes
+	- filter by ingredients, other params
+	- sort by various params(date created, rating)
+* Generate scatter-plot charts from bread queries
 
-**recipes api**
-* Add new recipes to the database
-* Update recipes in DB
-* Delete recipes from DB
-* Query recipes on various parameters:
-	* by ingredients in that recipe
-	* by creator
-	* by rating
-	* etc.
+**Recipes API**
 
-**users api**
-*While by design the application will only have one user, I want to include a total authentication flow - for practice.*
-* Create new users securely
-	* hash passwords
-* Login and log out with tokens
+* Create, Update, Delete recipes in document database
+* Query recipes using query strings
+	- by ingredients in that recipe
+	- by creator
+	- by rating
+	- etc.
+	
+**Users API**
+
+*While, by design, the application will only have one user - and as such not require login, logout, or authentication - I want to include a full authentication flow for practice.*
+
+* Create new users
+	- Hash passwords with BCrypt
+* Log in and log out with tokens
+
+#### Optional
+
+**Client**
+
+* Plot multiple data sets on a single chart, to compare
+* Export recipes to MyFitnessPal
+
+
+### Architecture
 
 #### Stack
 
 ##### Front-End
 
-* **[Vue.js 2.0](https://vuejs.org/):** JavaScript framework
+* **[Vue.js 2.0](https://vuejs.org/):** My prefered JavaScript framework for web apps
 
 ##### Back-End
 
 * **[FastAPI](https://fastapi.tiangolo.com/):** Python RESTful API framework
-* **[ArangoDB](https://www.arangodb.com/):** Multi-model NOSQL database
 
-
-
-#### Data
+###### Database
 
 Data will be stored in a **document data-store** for the following reasons:
 
@@ -69,19 +76,24 @@ Data will be stored in a **document data-store** for the following reasons:
 
 I am evaluating **[ArangoDB](https://www.arangodb.com/)** as my document database for this project.
 
-**RECIPE SCHEMA**
+
+#### Data Models
+
+<!-- TODO: REPLACE WITH REAL JSON -->
+
+**RECIPE**
 
 - `id`: _key
 - `creator`: _key
 - `dateCreated`: date
 - `ingredients`: list
-  - `ingredient`: obj<sup>1</sup>
+  - `ingredient`: obj
     - `name`: str
     - `quantity`: float
     - `unit`: str (or convert everything to g or mL before saving)
     - _nutritional macros_
 - `procedures`: list
-  - `procedure`: obj (options: mix, proof, bake)<sup>2</sup>
+  - `procedure`: obj (options: mix, proof, bake)
     - `time`: int (min, required for bake and proof)
     - `temperature`: int (deg F, required for bake and proof)
     - `details`: str
@@ -92,29 +104,23 @@ I am evaluating **[ArangoDB](https://www.arangodb.com/)** as my document databas
   - `image`: url
   - `notes`: str
 
-**<sup>1</sup>ingredient:**
-nested schema - describes a single ingredient.
-MANY-TO-MANY: one recipe can have many ingredients, one ingredient can be used in many recipes
-_Optionally_, include basic macro-nutrient information, such as calories, **or** a link to connect this ingredient to some external nutritional database.
-
-**<sup>2</sup>procedure:**
-nested schema - describes a step for making the bread.
-there are several types of procedure, including _mixing_ the dough, _proofing_, and _baking_. Maybe each type of procedure is also a schema?
-Each procedure type has its own required fields.
-either ONE-TO-MANY or MANY-TO-MANY: one recipe will always have many procedures, but idk if a single procedure will be used in many recipes, or if each recipe's procedures are unique.
-
-**USER SCHEMA**
+**USER**
 
 - `id`: int
 - `email`: str
 - `hashedPassword)`: str (bcrypt)
 
 
----
+### Views
+
+> TODO: views
+
 
 ---
 
-## Development Journal
+---
+
+# Development Journal
 
 #### 10/30/19
 
@@ -167,3 +173,6 @@ After thinking about it some more, I don't think that there will be a problem wi
 2. Suppose that, at some point, I change the brand of flour that I am using, and want to update my `flour` document with the new brand. While all future recipes would use the new brand, *old recipes would still have used the old brand*. Therefor, I would not want to update any recipes' ingredients if an ingredient was changed.
 
 It occurs to me now that these problems were never really problems, but were actually features of a document data-store over a relational database. I think I just need more time to get into the mindset of working with document data-stores.
+
+
+I found [this excellent article on Dev.to](https://dev.to/guin/a-plan-for-planning-your-first-side-project-2b2l) about planning a side project. I am using it for writing the rest of the design doc.
