@@ -5,7 +5,8 @@ install:
   - pip install pipenv
   - pipenv install --dev
 script:
-  - pipenv run black app
-  - pipenv run isort app
-  - pipenv run flake8 app
-  - pipenv run mypy app
+  - pipenv run black .
+  - pipenv run isort -rc .
+  - pipenv run flake8 api tests
+  - pipenv run mypy .
+  - pipenv run python -m pytest
