@@ -54,6 +54,7 @@ _While, by design, the application will only have one user - and as such not req
 - [iSort](https://github.com/timothycrosley/isort)
 - [mypy](http://www.mypy-lang.org/)
 - [flake8](http://flake8.pycqa.org/en/latest/index.html#)
+- [pre-commit](https://pre-commit.com/)
 
 - **[FastAPI](https://fastapi.tiangolo.com/):** Python RESTful API framework
 

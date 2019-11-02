@@ -10,6 +10,7 @@ flake8 = "*"
 mypy = "*"
 pytest = "*"
 pytest-cov = "*"
+pre-commit = "*"
 
 [packages]
 
