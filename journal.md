@@ -91,5 +91,14 @@ export PIPENV_VENV_IN_PROJECT=true
 
 see: https://pipenv.readthedocs.io/en/latest/advanced/#custom-virtual-environment-location
 
-I found this article that has more options for python tooling, if you find there is a need for more later:
+I found this article that has more options for python tooling, if there is a need for more later:
 https://medium.com/georgian-impact-blog/python-tooling-makes-a-project-tick-181d567eea44
+
+I used the [sourcery article](https://sourcery.ai/blog/python-best-practices/) to set up my tooling. I'm almost certain that my config for these will break once I get some code in there. In retrospect, I should have coded a hello-world or something to test my tools on first.
+
+I tried doing a PR today - I won't be doing them for the rest of the project; they take too much time and are unnecessary for a project like this.
+
+**Travis-CI for bread app:**
+https://travis-ci.org/aidan-mcbride/bread-app
+
+I decided to use travis because I am already somewhat familiar with it.
