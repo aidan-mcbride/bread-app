@@ -132,3 +132,5 @@ there are several solutions:
 1.  [add `conftest.py` to project root directory](https://stackoverflow.com/a/50610630)
 2.  [`export PYTHONPATH=.`](https://stackoverflow.com/a/10253916)
 3.  [run pytest with `pipenv run python -m pytest`, which will add the current working directory to the `sys.path`](https://docs.pytest.org/en/latest/usage.html#calling-pytest-through-python-m-pytest)
+
+Merged dev branch back into master once I got a working hello-world with tooling config. This will be my jumping-off point for the app.
