@@ -171,3 +171,15 @@ Merged dev branch back into master once I got a working hello-world with tooling
 I'm going to start into my app by following along to the [fastapi tutorial](https://fastapi.tiangolo.com/tutorial/first-steps/), but substituting my needs.
 
 Barring the parts about SQLAlchemy, [this section of the FastAPI docs has a good workflow for organizing api code into files](https://fastapi.tiangolo.com/tutorial/sql-databases/)
+
+to run pre-commit hook without actually committing:
+
+```sh
+pipenv run pre-commit run --all-files
+```
+
+to commit without running pytest hook
+
+```sh
+SKIP=pytest git commit
+```
