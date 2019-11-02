@@ -11,10 +11,11 @@ mypy = "*"
 pytest = "*"
 pytest-cov = "*"
 pre-commit = "*"
+uvicorn = "*"
+requests = "*"
 
 [packages]
 fastapi = "*"
-requests = "*"
 
 [requires]
 python_version = "3.7"
