@@ -134,3 +134,38 @@ there are several solutions:
 3.  [run pytest with `pipenv run python -m pytest`, which will add the current working directory to the `sys.path`](https://docs.pytest.org/en/latest/usage.html#calling-pytest-through-python-m-pytest)
 
 Merged dev branch back into master once I got a working hello-world with tooling config. This will be my jumping-off point for the app.
+
+> Eric Elliott's 5 questions every unit test must answer:
+>
+> 1. What are you testing?
+> 2. What should it do?
+> 3. What is the _expected_ output?
+> 4. What is the _actual_ output?
+> 5. How can the test be reproduced? _(answered implicitly in > test structure by the code used to produce the `actual` > value)_
+>
+> ```python
+> def test_some_component():
+>   actual = 'what is the expected output?'
+>   expected = 'what is the expected output?'
+>
+>   assert expected == actual
+> ```
+>
+> example:
+>
+> ```python
+> def test_hello_world():
+>   response = client.get("/")
+>
+>   # test for status code
+>   actual = response.status_code
+>   expected = 200
+>   assert expected == actual
+>
+>   # test for response content
+>   actual = response.json()
+>   expected = {"msg": "Hello World"}
+>   assert expected == actual
+> ```
+
+I'm going to start into my app by following along to the [fastapi tutorial](https://fastapi.tiangolo.com/tutorial/first-steps/), but substituting my needs.
