@@ -1,6 +1,7 @@
-# Welcome to Bread App 👋
+# Bread App
 
 [![License: GPL--3.0](https://img.shields.io/badge/License-GPL--3.0-yellow.svg)](https://github.com/aidan-mcbride/bread-app/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/aidan-mcbride/bread-app.svg?branch=master)](https://travis-ci.org/aidan-mcbride/bread-app)
 
 > Data-driven baking application
 
