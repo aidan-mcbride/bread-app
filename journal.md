@@ -102,3 +102,33 @@ I tried doing a PR today - I won't be doing them for the rest of the project; th
 https://travis-ci.org/aidan-mcbride/bread-app
 
 I decided to use travis because I am already somewhat familiar with it.
+
+#### 11/2/19
+
+**PROBLEM: pytest can't find module**
+
+when running `pipenv run pytest` the following error occurs:
+
+```
+_____________________ ERROR collecting tests/test_main.py ______________________
+ImportError while importing test module '/mnt/DATA/Code/bread-app/tests/test_main.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+tests/test_main.py:3: in <module>
+    from api.main import app
+E   ModuleNotFoundError: No module named 'api'
+```
+
+when running **`pipenv run python -m pytest`**, tests run fine.
+
+**SOLUTION:**
+
+https://docs.pytest.org/en/latest/usage.html#calling-pytest-through-python-m-pytest
+
+the problem is caused by the project directory not being added to the `sys.path`
+
+there are several solutions:
+
+1.  [add `conftest.py` to project root directory](https://stackoverflow.com/a/50610630)
+2.  [`export PYTHONPATH=.`](https://stackoverflow.com/a/10253916)
+3.  [run pytest with `pipenv run python -m pytest`, which will add the current working directory to the `sys.path`](https://docs.pytest.org/en/latest/usage.html#calling-pytest-through-python-m-pytest)
