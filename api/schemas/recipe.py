@@ -34,8 +34,10 @@ class RecipeBase(BaseModel):
     ingredients: List[Ingredient] = list()
     procedures: List[Procedure] = list()
     shape: str
-    servings: int = Schema(1, gt=0, description="Recipe must yield at least 1 serving")
-    rating: int = Schema(0, le=5, description="rating from 0 to 5")
+    servings: int = Schema(
+        default=1, gt=0, description="Recipe must yield at least 1 serving"
+    )
+    rating: int = Schema(0, ge=0, le=5, description="rating from 0 to 5")
     # TODO: image upload with form data
     # image: UrlStr = None
     notes: str = None
