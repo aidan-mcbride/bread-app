@@ -169,3 +169,5 @@ Merged dev branch back into master once I got a working hello-world with tooling
 > ```
 
 I'm going to start into my app by following along to the [fastapi tutorial](https://fastapi.tiangolo.com/tutorial/first-steps/), but substituting my needs.
+
+Barring the parts about SQLAlchemy, [this section of the FastAPI docs has a good workflow for organizing api code into files](https://fastapi.tiangolo.com/tutorial/sql-databases/)
