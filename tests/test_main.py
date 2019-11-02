@@ -12,24 +12,19 @@ def test_read_main():
 
 
 mock_recipe = {
-    "creator": 1,
-    "dateCreated": "ISO-8601 date",
-    "ingredients": [
-        {"name": "salt", "quantity": 1.5, "unit": "tsp"},
-        {"name": "all-purpose flour", "quantity": 1, "unit": "cups"},
-    ],
+    "shape": "string",
+    "ingredients": [{"name": "string", "quantity": 1, "unit": "tsp"}],
     "procedures": [
-        {"name": "proof", "time": "90", "temp": 80, "details": "oven bottom rack"},
-        {"name": "bake", "time": 10, "temp": 500},
+        {"name": "string", "details": "string", "time": 2, "temperature": 500}
     ],
-    "shape": "snack round",
-    "yield": 8,
-    "results": {"rating": 5},
+    "servings": 1,
+    "rating": 1,
+    "notes": "string",
 }
 
 
 def test_create_recipe():
-    response = client.post("/recipes/", json={"name": "bread", "rating": 5})
+    response = client.post("/recipes/", json=mock_recipe)
 
     # test status code
     actual = response.status_code
