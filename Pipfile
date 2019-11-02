@@ -13,6 +13,8 @@ pytest-cov = "*"
 pre-commit = "*"
 
 [packages]
+fastapi = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
