@@ -19,7 +19,7 @@ class TestCreateRecipe:
         "notes": "string",
     }
 
-    def test_successful_create(self):
+    def test_create(self):
         response = client.post("/recipes/", json=self.mock_recipe)
 
         # test status code
@@ -32,4 +32,27 @@ class TestCreateRecipe:
         today = date.today().strftime("%Y-%m-%d")
         expected = self.mock_recipe
         expected["date_created"] = today
+        assert expected == actual
+
+    def test_create_optionals(self):
+        minimum_recipe = {"shape": "string"}
+        response = client.post("/recipes/", json=minimum_recipe)
+
+        actual = response.json()
+        expected = {
+            "shape": "string",
+            "ingredients": [],
+            "procedures": [],
+            "servings": 1,
+            "rating": 0,
+            "notes": None,
+            "date_created": date.today().strftime("%Y-%m-%d"),
+        }
+        assert expected == actual
+
+    def test_bad_request_body(self):
+        request_body = {}
+        response = client.post("/recipes/", json=request_body)
+        actual = response.status_code
+        expected = 422
         assert expected == actual
