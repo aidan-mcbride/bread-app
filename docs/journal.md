@@ -183,3 +183,6 @@ to commit without running pytest hook
 ```sh
 SKIP=pytest git commit
 ```
+
+See here for explanation of `recipe = Recipe(**recipe_in.dict())` in `recipes.py`
+https://fastapi.tiangolo.com/tutorial/extra-models/#about-user_indict

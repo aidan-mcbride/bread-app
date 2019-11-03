@@ -1,4 +1,4 @@
-# from datetime import date
+from datetime import date
 from enum import Enum
 from typing import List, Optional
 
@@ -28,6 +28,7 @@ class Procedure(BaseModel):
     details: Optional[str]
 
 
+# shared fields for all recipes
 class RecipeBase(BaseModel):
     # TODO: creator: ArangoDB _key
     # date_created: date -- add on server
@@ -43,5 +44,19 @@ class RecipeBase(BaseModel):
     notes: str = None
 
 
+# shared fields for recipes that have been saved to db
+class RecipeInDB(RecipeBase):
+    date_created: date = date.today()
+
+
 class RecipeCreate(RecipeBase):
+    pass
+
+
+class RecipeUpdate(RecipeInDB):
+    pass
+
+
+# data returned to client as response body
+class Recipe(RecipeInDB):
     pass

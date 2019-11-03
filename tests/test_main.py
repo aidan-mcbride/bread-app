@@ -1,3 +1,5 @@
+from datetime import date
+
 from starlette.testclient import TestClient
 
 from api.main import app
@@ -29,4 +31,11 @@ def test_create_recipe():
     # test status code
     actual = response.status_code
     expected = 201
+    assert expected == actual
+
+    # test response body has date added
+    actual = response.json()
+    today = date.today().strftime("%Y-%m-%d")
+    expected = mock_recipe
+    expected["date_created"] = today
     assert expected == actual

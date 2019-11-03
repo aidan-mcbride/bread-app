@@ -1,14 +1,12 @@
 from fastapi import APIRouter
 from starlette.status import HTTP_201_CREATED
 
-from api.schemas.recipe import RecipeCreate
+from api.schemas.recipe import Recipe, RecipeCreate
 
 router = APIRouter()
 
-# TODO: move to schemas dir or something
-# TODO: add remaining fields
 
-# TODO: move to router file
-@router.post("/", status_code=HTTP_201_CREATED, response_model=RecipeCreate)
-async def create_recipe(recipe: RecipeCreate):
+@router.post("/", status_code=HTTP_201_CREATED, response_model=Recipe)
+async def create_recipe(recipe_in: RecipeCreate):
+    recipe = Recipe(**recipe_in.dict())
     return recipe
