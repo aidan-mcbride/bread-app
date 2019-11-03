@@ -1,9 +1,13 @@
 import random
 import string
 from datetime import date
-from typing import List
 
-import pytest
+from fastapi.encoders import jsonable_encoder
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_422_UNPROCESSABLE_ENTITY,
+)
 from starlette.testclient import TestClient
 
 from api.main import app
@@ -49,15 +53,6 @@ def random_recipe() -> Recipe:
     return recipe
 
 
-@pytest.fixture
-def mock_recipes() -> List[Recipe]:
-    recipes = list()
-    list_length = random.randint(5, 25)
-    for _ in range(list_length):
-        recipes.append(random_recipe())
-    return recipes
-
-
 # tests for utilities
 def test_random_lower_string():
     actual = random_lower_string(length=10)
@@ -86,9 +81,19 @@ def test_random_recipe():
 
 
 class TestReadRecipes:
-    def test_read(self, mock_recipes):
-        assert len(mock_recipes) >= 5
-        assert isinstance(mock_recipes[0], Recipe)
+    def test_read(self):
+        for _ in range(5):
+            client.post("/recipes/", json=jsonable_encoder(random_recipe()))
+
+        response = client.get("/recipes/")
+
+        actual = response.status_code
+        expected = HTTP_200_OK
+        assert expected == actual
+
+        actual = len(response.json())
+        expected = 5
+        assert expected == actual
 
 
 class TestCreateRecipe:
@@ -108,7 +113,7 @@ class TestCreateRecipe:
 
         # test status code
         actual = response.status_code
-        expected = 201
+        expected = HTTP_201_CREATED
         assert expected == actual
 
         # test response body has date added
@@ -138,5 +143,5 @@ class TestCreateRecipe:
         request_body = {}
         response = client.post("/recipes/", json=request_body)
         actual = response.status_code
-        expected = 422
+        expected = HTTP_422_UNPROCESSABLE_ENTITY
         assert expected == actual
