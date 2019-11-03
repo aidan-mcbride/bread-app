@@ -103,6 +103,8 @@ https://travis-ci.org/aidan-mcbride/bread-app
 
 I decided to use travis because I am already somewhat familiar with it.
 
+---
+
 #### 11/2/19
 
 **PROBLEM: pytest can't find module**
@@ -186,3 +188,23 @@ SKIP=pytest git commit
 
 See here for explanation of `recipe = Recipe(**recipe_in.dict())` in `recipes.py`
 https://fastapi.tiangolo.com/tutorial/extra-models/#about-user_indict
+
+---
+
+#### 11/3/19
+
+**PROBLEM: How to add a testing database? Specifically, how to use ArangoDB in continuous integration?**
+
+In the final application, ArangoDB will be a docker container, but I don't know if that is feasible for running CI tests.
+
+I found [this Travis-CI documentation](https://docs.travis-ci.com/user/database-setup/) which explains how to use various databases with Travis-CI, though ArangoDB is not one of them.
+
+I found [this GitHub repo](https://github.com/brennv/arangodb-travis) that looks promising for learning how to integrate ArangoDB into Travis-CI.
+
+I found [This Travis-CI documentation on using docker](https://docs.travis-ci.com/user/docker/), and it may be that the best solution is to use the docker version of ArangoDB.
+
+The problem is, though, that I barely know how to just use ArangoDB in a python application; therefor, this is the path forward as I see it:
+
+1. Create a [spike](https://stackoverflow.com/questions/249969/why-are-tdd-spikes-called-spikes) on a new branch, Integrate local ArangoDB into existing endpoints*(GET, POST for collection)*.
+2. Set up tests to use separate test database locally
+3. Add database to Travis-CI config.
