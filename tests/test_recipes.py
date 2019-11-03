@@ -1,7 +1,9 @@
 import random
 import string
 from datetime import date
+from typing import List
 
+import pytest
 from starlette.testclient import TestClient
 
 from api.main import app
@@ -47,8 +49,46 @@ def random_recipe() -> Recipe:
     return recipe
 
 
+@pytest.fixture
+def mock_recipes() -> List[Recipe]:
+    recipes = list()
+    list_length = random.randint(5, 25)
+    for _ in range(list_length):
+        recipes.append(random_recipe())
+    return recipes
+
+
+# tests for utilities
+def test_random_lower_string():
+    actual = random_lower_string(length=10)
+    assert isinstance(actual, str)
+    assert len(actual) == 10
+
+
+def test_random_recipe():
+    actual = random_recipe()
+    expected = [
+        "date_created",
+        "shape",
+        "servings",
+        "rating",
+        "notes",
+        "ingredients",
+        "procedures",
+    ]
+    for field in expected:
+        assert hasattr(actual, field)
+
+    assert len(actual.ingredients) > 0
+    assert len(actual.procedures) > 0
+    assert isinstance(actual.ingredients[0], Ingredient)
+    assert isinstance(actual.procedures[0], Procedure)
+
+
 class TestReadRecipes:
-    pass
+    def test_read(self, mock_recipes):
+        assert len(mock_recipes) >= 5
+        assert isinstance(mock_recipes[0], Recipe)
 
 
 class TestCreateRecipe:
