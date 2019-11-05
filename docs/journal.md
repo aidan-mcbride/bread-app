@@ -251,3 +251,15 @@ pyArango's [method for converting a document to JSON](https://bioinfo.iric.ca/~d
 
 - [Using **Docker** in **Travis-CI**](https://docs.travis-ci.com/user/docker/)
 - [Using **ArangoDB** in **Docker**](https://www.arangodb.com/download-major/docker/)
+
+possible scripts for arango test db, if you don't want to just use root/no auth:
+
+```Travis
+  - docker run -d -p 8529:8529 -e ARANGO_NO_AUTH=1 arangodb/arangodb:3.5.1
+  - arangosh --server.authentication false
+  - db._createDatabase("breadapp_testing");
+  - var users = require("@arangodb/users");
+  - users.save("breadapp", "breadapp")
+  - users.grantDatabase("breadapp", "breadapp_testing");
+  - exit
+```
