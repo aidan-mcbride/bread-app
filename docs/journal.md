@@ -205,6 +205,46 @@ I found [This Travis-CI documentation on using docker](https://docs.travis-ci.co
 
 The problem is, though, that I barely know how to just use ArangoDB in a python application; therefor, this is the path forward as I see it:
 
-1. Create a [spike](https://stackoverflow.com/questions/249969/why-are-tdd-spikes-called-spikes) on a new branch, Integrate local ArangoDB into existing endpoints*(GET, POST for collection)*.
+1. Create a [spike](https://stackoverflow.com/questions/249969/why-are-tdd-spikes-called-spikes) on a new branch, Integrate local ArangoDB into existing endpoints _(GET, POST for collection)_.
 2. Set up tests to use separate test database locally
 3. Add database to Travis-CI config.
+
+---
+
+#### 11/4/19
+
+> **TODO:**
+>
+> - [x] Get database working at all
+
+**WHAT'S GOING ON IN [THIS EXAMPLE](https://fastapi.tiangolo.com/tutorial/nosql-databases/)**
+
+- `get_bucket()` initializes a database connection and returns a database that can be operated upon.
+  - this function is called anywhere that needs a database connection. _Can it be abstracted into a dependency or something?_
+- `get_user()` is a _db_op_, and the `bucket` is passed as a variable. It is unclear if a Couchbase `bucket` is equivalent to an ArangoDB `db` or `collection`.
+- `read_user()` is the _route_, and it is where `get_bucket()` is called, and the result of that is passed to `get_user()`
+
+**[PYARANGO FLOW](https://www.arangodb.com/tutorials/tutorial-python/)**
+
+1. initialize database connection
+2. create database if not exist
+3. create collection if not exist
+4. operate on collection
+
+pyArango's [method for converting a document to JSON](https://bioinfo.iric.ca/~daoudat/pyArango/document.html#pyArango.document.Document.toJson) is bugged, so in the `read_recipes()` function in `db_ops.py` are some work-arounds until that is fixed.
+
+---
+
+#### 11/5/19
+
+> **TODO:**
+> In spike:
+>
+> - [x] Add test db as override dependency in tests
+> - [x] Get both dbs using correct credentials
+> - [ ] See about giving breadapp user the power to create datbases.
+>
+> In `develop`:
+>
+> - [ ] Rebuild spike with TDD (GET, POST to database)
+> - [ ] Add ArangoDB Docker to travis config
