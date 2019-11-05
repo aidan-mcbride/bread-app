@@ -248,3 +248,6 @@ pyArango's [method for converting a document to JSON](https://bioinfo.iric.ca/~d
 >
 > - [ ] Rebuild spike with TDD (GET, POST to database)
 > - [ ] Add ArangoDB Docker to travis config
+
+- [Using **Docker** in **Travis-CI**](https://docs.travis-ci.com/user/docker/)
+- [Using **ArangoDB** in **Docker**](https://www.arangodb.com/download-major/docker/)
