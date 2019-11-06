@@ -8,7 +8,8 @@ from pyArango.connection import Connection
 from pyArango.database import Database
 
 
-def get_db(db_name: str = "breadapp") -> Database:
+def get_db() -> Database:
+    db_name = "breadapp"
     conn = Connection()
     if not conn.hasDatabase(db_name):
         conn.createDatabase(name=db_name)
@@ -16,8 +17,13 @@ def get_db(db_name: str = "breadapp") -> Database:
     return db
 
 
-def get_test_db(db_name: str = "breadapp_testing") -> Database:
-    return get_db(db_name=db_name)
+def get_test_db() -> Database:
+    db_name = "breadapp_testing"
+    conn = Connection()
+    if not conn.hasDatabase(db_name):
+        conn.createDatabase(name=db_name)
+    db = conn[db_name]
+    return db
 
 
 def get_collection(db: Database, collection: str) -> Collection:
