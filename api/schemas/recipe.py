@@ -46,6 +46,7 @@ class RecipeBase(BaseModel):
 
 # shared fields for recipes that have been saved to db
 class RecipeInDB(RecipeBase):
+    _key: int
     date_created: date = date.today()
 
 
