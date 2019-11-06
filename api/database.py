@@ -1,8 +1,3 @@
-"""
-MOCK DATABASE FOR NOW
-TODO: Replace with ArangoDB
-"""
-
 from pyArango.collection import Collection
 from pyArango.connection import Connection
 from pyArango.database import Database
