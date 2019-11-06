@@ -1,7 +1,7 @@
 import random
 import string
 
-from api.schemas.recipe import Ingredient, Procedure, Recipe, Unit
+from api.schemas.recipe import Ingredient, Procedure, RecipeCreate, Unit
 
 
 def random_lower_string(length: int = 32) -> str:
@@ -27,8 +27,11 @@ def random_procedure() -> Procedure:
     return procedure
 
 
-def random_recipe() -> Recipe:
-    recipe = Recipe(
+def random_recipe() -> RecipeCreate:
+    """
+    return a randomized recipe as if sent from client
+    """
+    recipe = RecipeCreate(
         shape=random_lower_string(),
         servings=random.randint(1, 24),
         rating=random.randint(1, 5),

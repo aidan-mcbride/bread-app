@@ -43,15 +43,20 @@ class RecipeBase(BaseModel):
     notes: str = None
 
 
-# shared fields for recipes that have been saved to db
-class RecipeInDB(RecipeBase):
-    key: int  # added by db
-    date_created: date = date.today()  # added by create_recipe in db_ops
-
-
 # fields available to client when creating new recipes
 class RecipeCreate(RecipeBase):
     pass
+
+
+# date is added to created recipe before being added to db
+class RecipeCreateToDB(RecipeCreate):
+    date_created: date = date.today()
+
+
+# shared fields for recipes that have been saved to db
+class RecipeInDB(RecipeBase):
+    key: int  # added by db
+    date_created: date  # added by create_recipe in db_ops
 
 
 # fields available to client when updating recipes
