@@ -50,11 +50,17 @@ class TestCreateRecipe:
         expected = HTTP_201_CREATED
         assert expected == actual
 
-        # test response body has date added
+        # test response body has key
         actual = response.json()
+        assert "key" in actual
+        assert isinstance(actual["key"], int)
+        assert len(str(actual["key"])) > 4
+
+        # test response body has date added and is otherwise correct
         today = date.today().strftime("%Y-%m-%d")
         expected = self.mock_recipe
         expected["date_created"] = today
+        expected["key"] = actual["key"]
         assert expected == actual
 
     def test_create_optionals(self):
@@ -69,6 +75,7 @@ class TestCreateRecipe:
             "servings": 1,
             "rating": 0,
             "notes": None,
+            "key": actual["key"],
             "date_created": date.today().strftime("%Y-%m-%d"),
         }
         assert expected == actual
