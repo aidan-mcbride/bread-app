@@ -30,9 +30,8 @@ def read_recipes(db: Database) -> List[Recipe]:
     recipes: List[Recipe] = list()
 
     results = collection.fetchAll()
-    # TODO: submit PR to pyArango to fix this
-    results_list = results.response["result"]
-    for recipe in results_list:
-        recipes.append(Recipe(**recipe))
+    for recipe in results:
+        recipe_data = recipe.getStore()
+        recipes.append(Recipe(**recipe_data))
 
     return recipes

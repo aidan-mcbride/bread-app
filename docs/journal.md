@@ -246,8 +246,8 @@ pyArango's [method for converting a document to JSON](https://bioinfo.iric.ca/~d
 >
 > In `develop`:
 >
-> - [ ] Rebuild spike with TDD (GET, POST to database)
-> - [ ] Add ArangoDB Docker to travis config
+> - [x] Rebuild spike with TDD (GET, POST to database)
+> - [x] Add ArangoDB Docker to travis config
 
 - [Using **Docker** in **Travis-CI**](https://docs.travis-ci.com/user/docker/)
 - [Using **ArangoDB** in **Docker**](https://www.arangodb.com/download-major/docker/)
@@ -263,3 +263,11 @@ possible scripts for arango test db, if you don't want to just use root/no auth:
   - users.grantDatabase("breadapp", "breadapp_testing");
   - exit
 ```
+
+---
+
+#### 11/6/19
+
+[Documentation for arangodb docker container](https://hub.docker.com/r/arangodb/arangodb/)
+
+[This version of the documentation - which includes the `document.toJson()` method](https://bioinfo.iric.ca/~daoudat/pyArango/index.html) is outdated. I don't even know how I found my way to that version of the docs. **[This is the up-to-date documentation.](https://pyarango.readthedocs.io/en/latest/)** This version includes the `document.getStore()` method, which returns a dictionary of the document.
