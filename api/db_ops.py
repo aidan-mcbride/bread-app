@@ -33,6 +33,7 @@ def read_recipes(db: Database) -> List[Recipe]:
     results = collection.fetchAll()
     for recipe in results:
         recipe_data = recipe.getStore()
-        recipes.append(Recipe(**recipe_data))
+        key = recipe_data["_key"]
+        recipes.append(Recipe(**recipe_data, key=key))
 
     return recipes

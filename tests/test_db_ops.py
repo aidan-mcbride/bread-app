@@ -27,10 +27,26 @@ def test_create_recipe():
 
 
 def test_read_recipes():
-    recipe = random_recipe()
+    recipe_in = random_recipe()
     db = get_test_db()
-    db_ops.create_recipe(db=db, recipe_in=recipe)
+    db_ops.create_recipe(db=db, recipe_in=recipe_in)
 
-    actual = db_ops.read_recipes(db=db)
-    expected = [recipe]
+    response = db_ops.read_recipes(db=db)
+
+    # check that a list of recipes of the correct length is returned
+    actual = response
+    expected = list
+    assert isinstance(actual, expected)
+    assert len(actual) == 1
+    assert isinstance(actual[0], Recipe)
+
+    # test for key in recipe
+    actual = response[0]
+    assert hasattr(actual, "key")
+    key = actual.dict()["key"]
+    assert isinstance(key, int)
+    assert len(str(key)) > 4
+
+    # use actual's key to verify response recipe
+    expected = Recipe(**recipe_in.dict(), key=key, date_created=date.today())
     assert expected == actual
