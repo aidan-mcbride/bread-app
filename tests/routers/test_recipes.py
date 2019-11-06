@@ -54,7 +54,6 @@ class TestCreateRecipe:
         actual = response.json()
         assert "key" in actual
         assert isinstance(actual["key"], int)
-        assert len(str(actual["key"])) > 4
 
         # test response body has date added and is otherwise correct
         today = date.today().strftime("%Y-%m-%d")

@@ -20,7 +20,6 @@ def test_create_recipe():
     assert hasattr(actual, "key")
     key = actual.dict()["key"]
     assert isinstance(key, int)
-    assert len(str(key)) > 4
     # use actual's key for test recipe, since it is generated in db
     expected = Recipe(**recipe_in.dict(), key=key, date_created=date.today())
     assert expected == actual
@@ -45,7 +44,6 @@ def test_read_recipes():
     assert hasattr(actual, "key")
     key = actual.dict()["key"]
     assert isinstance(key, int)
-    assert len(str(key)) > 4
 
     # use actual's key to verify response recipe
     expected = Recipe(**recipe_in.dict(), key=key, date_created=date.today())
