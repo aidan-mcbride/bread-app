@@ -1,6 +1,5 @@
 from datetime import date
 
-from fastapi.encoders import jsonable_encoder
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -9,7 +8,7 @@ from starlette.status import (
 from starlette.testclient import TestClient
 
 from api.main import app
-from tests.utils import random_recipe
+from tests.utils import create_random_recipe
 
 client = TestClient(app)
 
@@ -74,7 +73,7 @@ class TestCreateRecipe:
 class TestReadRecipes:
     def test_read(self):
         for _ in range(5):
-            client.post("/recipes/", json=jsonable_encoder(random_recipe()))
+            create_random_recipe()
 
         response = client.get("/recipes/")
 
