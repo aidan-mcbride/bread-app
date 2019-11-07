@@ -6,6 +6,7 @@ from typing import List
 
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
+from pyArango.theExceptions import DocumentNotFoundError
 
 from api.database import get_collection
 from api.schemas.recipe import Recipe, RecipeCreate, RecipeCreateToDB
@@ -37,3 +38,16 @@ def read_recipes(db: Database) -> List[Recipe]:
         recipes.append(Recipe(**recipe_data, key=key))
 
     return recipes
+
+
+def read_recipe(key: int, db: Database) -> Recipe:
+    collection = get_collection(db=db, collection="Recipes")
+    try:
+        results = collection[key]
+        recipe_data = results.getStore()
+        key = recipe_data["_key"]
+        recipe = Recipe(**recipe_data, key=key)
+    except DocumentNotFoundError:
+        recipe = None
+
+    return recipe

@@ -3,6 +3,7 @@ from datetime import date
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
+    HTTP_404_NOT_FOUND,
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
 from starlette.testclient import TestClient
@@ -83,4 +84,28 @@ class TestReadRecipes:
 
         actual = len(response.json())
         expected = 5
+        assert expected == actual
+
+
+class TestReadRecipe:
+    def test_read(self):
+        recipe = create_random_recipe()
+        response = client.get("/recipes/{key}".format(key=recipe.key))
+        actual = response.status_code
+        expected = HTTP_200_OK
+        assert expected == actual
+
+        actual = response.json()
+        expected = recipe.dict()
+
+        assert expected["key"] == actual["key"]
+        assert expected["ingredients"] == actual["ingredients"]
+        assert expected["procedures"] == actual["procedures"]
+
+    def test_read_not_found(self):
+        # database is empty
+        response = client.get("/recipes/0")
+
+        actual = response.status_code
+        expected = HTTP_404_NOT_FOUND
         assert expected == actual

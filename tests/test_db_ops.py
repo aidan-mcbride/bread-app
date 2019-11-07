@@ -26,8 +26,8 @@ def test_create_recipe():
 
 
 def test_read_recipes():
-    expected = create_random_recipe()
     db = get_test_db()
+    expected = create_random_recipe()
     response = db_ops.read_recipes(db=db)
 
     # check that a list of recipes of the correct length is returned
@@ -43,4 +43,18 @@ def test_read_recipes():
     assert isinstance(key, int)
 
     # test recipe data
+    assert expected == actual
+
+
+def test_read_recipe():
+    db = get_test_db()
+    expected = create_random_recipe()
+    actual = db_ops.read_recipe(db=db, key=expected.key)
+    assert expected == actual
+
+
+def test_read_recipe_not_found():
+    db = get_test_db()
+    expected = None
+    actual = db_ops.read_recipe(db=db, key=0)
     assert expected == actual
