@@ -1,7 +1,9 @@
 import random
 import string
 
-from api.schemas.recipe import Ingredient, Procedure, RecipeCreate, Unit
+from api import db_ops
+from api.database import get_test_db
+from api.schemas.recipe import Ingredient, Procedure, Recipe, RecipeCreate, Unit
 
 
 def random_lower_string(length: int = 32) -> str:
@@ -42,6 +44,12 @@ def random_recipe() -> RecipeCreate:
     for _ in range(random.randint(1, 12)):
         recipe.procedures.append(random_procedure())
     return recipe
+
+
+def create_random_recipe() -> Recipe:
+    recipe_in = random_recipe()
+    db = get_test_db()
+    return db_ops.create_recipe(db=db, recipe_in=recipe_in)
 
 
 # tests for utilities
