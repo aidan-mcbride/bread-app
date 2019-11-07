@@ -54,7 +54,6 @@ def test_random_lower_string():
 def test_random_recipe():
     actual = random_recipe()
     expected = [
-        "date_created",
         "shape",
         "servings",
         "rating",
