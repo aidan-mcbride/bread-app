@@ -34,16 +34,16 @@ class TestCreateRecipe:
         expected = HTTP_201_CREATED
         assert expected == actual
 
-        # test response body has key
+        # test response body has id
         actual = response.json()
-        assert "key" in actual
-        assert isinstance(actual["key"], int)
+        assert "id" in actual
+        assert isinstance(actual["id"], int)
 
         # test response body has date added and is otherwise correct
         today = date.today().strftime("%Y-%m-%d")
         expected = self.mock_recipe
         expected["date_created"] = today
-        expected["key"] = actual["key"]
+        expected["id"] = actual["id"]
         assert expected == actual
 
     def test_create_optionals(self):
@@ -58,7 +58,7 @@ class TestCreateRecipe:
             "servings": 1,
             "rating": 0,
             "notes": None,
-            "key": actual["key"],
+            "id": actual["id"],
             "date_created": date.today().strftime("%Y-%m-%d"),
         }
         assert expected == actual
@@ -90,7 +90,7 @@ class TestReadRecipes:
 class TestReadRecipe:
     def test_read(self):
         recipe = create_random_recipe()
-        response = client.get("/recipes/{key}".format(key=recipe.key))
+        response = client.get("/recipes/{id}".format(id=recipe.id))
         actual = response.status_code
         expected = HTTP_200_OK
         assert expected == actual
@@ -98,7 +98,7 @@ class TestReadRecipe:
         actual = response.json()
         expected = recipe.dict()
 
-        assert expected["key"] == actual["key"]
+        assert expected["id"] == actual["id"]
         assert expected["ingredients"] == actual["ingredients"]
         assert expected["procedures"] == actual["procedures"]
 

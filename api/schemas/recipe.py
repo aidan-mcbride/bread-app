@@ -55,7 +55,7 @@ class RecipeCreateToDB(RecipeCreate):
 
 # shared fields for recipes that have been saved to db
 class RecipeInDB(RecipeBase):
-    key: int  # added by db
+    id: int  # document _key from arangodb
     date_created: date  # added by create_recipe in db_ops
 
 

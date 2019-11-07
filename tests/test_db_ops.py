@@ -16,12 +16,12 @@ def test_create_recipe():
 
     actual = db_ops.create_recipe(db=get_test_db(), recipe_in=recipe_in)
     assert isinstance(actual, Recipe)
-    # confirm that key added by db is valid
-    assert hasattr(actual, "key")
-    key = actual.dict()["key"]
-    assert isinstance(key, int)
-    # use actual's key for test recipe, since it is generated in db
-    expected = Recipe(**recipe_in.dict(), key=key, date_created=date.today())
+    # confirm that id added by db is valid
+    assert hasattr(actual, "id")
+    id = actual.dict()["id"]
+    assert isinstance(id, int)
+    # use actual's id for test recipe, since it is generated in db
+    expected = Recipe(**recipe_in.dict(), id=id, date_created=date.today())
     assert expected == actual
 
 
@@ -36,11 +36,11 @@ def test_read_recipes():
     assert len(actual) == 1
     assert isinstance(actual[0], Recipe)
 
-    # test for key in recipe
+    # test for id in recipe
     actual = response[0]
-    assert hasattr(actual, "key")
-    key = actual.dict()["key"]
-    assert isinstance(key, int)
+    assert hasattr(actual, "id")
+    id = actual.dict()["id"]
+    assert isinstance(id, int)
 
     # test recipe data
     assert expected == actual
@@ -49,12 +49,12 @@ def test_read_recipes():
 def test_read_recipe():
     db = get_test_db()
     expected = create_random_recipe()
-    actual = db_ops.read_recipe(db=db, key=expected.key)
+    actual = db_ops.read_recipe(db=db, id=expected.id)
     assert expected == actual
 
 
 def test_read_recipe_not_found():
     db = get_test_db()
     expected = None
-    actual = db_ops.read_recipe(db=db, key=0)
+    actual = db_ops.read_recipe(db=db, id=0)
     assert expected == actual

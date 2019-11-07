@@ -23,7 +23,7 @@ def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
     db_record = collection.createDocument(initDict=recipe_dict)
     db_record.save()
     # return database model
-    db_recipe = Recipe(**db_record.getStore(), key=db_record["_key"])
+    db_recipe = Recipe(**db_record.getStore(), id=db_record["_key"])
     return db_recipe
 
 
@@ -34,19 +34,19 @@ def read_recipes(db: Database) -> List[Recipe]:
     results = collection.fetchAll()
     for recipe in results:
         recipe_data = recipe.getStore()
-        key = recipe_data["_key"]
-        recipes.append(Recipe(**recipe_data, key=key))
+        id = recipe_data["_key"]
+        recipes.append(Recipe(**recipe_data, id=id))
 
     return recipes
 
 
-def read_recipe(key: int, db: Database) -> Recipe:
+def read_recipe(id: int, db: Database) -> Recipe:
     collection = get_collection(db=db, collection="Recipes")
     try:
-        results = collection[key]
+        results = collection[id]
         recipe_data = results.getStore()
-        key = recipe_data["_key"]
-        recipe = Recipe(**recipe_data, key=key)
+        id = recipe_data["_key"]
+        recipe = Recipe(**recipe_data, id=id)
     except DocumentNotFoundError:
         recipe = None
 

@@ -21,9 +21,9 @@ def read_recipes(db: dict = Depends(get_db)) -> List[Recipe]:
     return db_ops.read_recipes(db=db)
 
 
-@router.get("/{key}", response_model=Recipe)
-def read_recipe(key: int, db: dict = Depends(get_db)) -> Recipe:
-    recipe: Recipe = db_ops.read_recipe(db=db, key=key)
+@router.get("/{id}", response_model=Recipe)
+def read_recipe(id: int, db: dict = Depends(get_db)) -> Recipe:
+    recipe: Recipe = db_ops.read_recipe(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
     return recipe
