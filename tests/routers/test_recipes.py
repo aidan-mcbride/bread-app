@@ -14,22 +14,6 @@ from tests.utils import random_recipe
 client = TestClient(app)
 
 
-class TestReadRecipes:
-    def test_read(self):
-        for _ in range(5):
-            client.post("/recipes/", json=jsonable_encoder(random_recipe()))
-
-        response = client.get("/recipes/")
-
-        actual = response.status_code
-        expected = HTTP_200_OK
-        assert expected == actual
-
-        actual = len(response.json())
-        expected = 5
-        assert expected == actual
-
-
 class TestCreateRecipe:
     mock_recipe = {
         "shape": "string",
@@ -84,4 +68,20 @@ class TestCreateRecipe:
         response = client.post("/recipes/", json=request_body)
         actual = response.status_code
         expected = HTTP_422_UNPROCESSABLE_ENTITY
+        assert expected == actual
+
+
+class TestReadRecipes:
+    def test_read(self):
+        for _ in range(5):
+            client.post("/recipes/", json=jsonable_encoder(random_recipe()))
+
+        response = client.get("/recipes/")
+
+        actual = response.status_code
+        expected = HTTP_200_OK
+        assert expected == actual
+
+        actual = len(response.json())
+        expected = 5
         assert expected == actual
