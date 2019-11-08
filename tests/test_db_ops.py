@@ -89,3 +89,17 @@ class TestUpdateRecipe:
         actual = updated_recipe.ingredients
         expected = updated_ingredients
         assert expected == actual
+
+
+class TestDeleteRecipe:
+    def test_delete(self):
+        db = get_test_db()
+        recipe = create_random_recipe()
+
+        actual = db_ops.delete_recipe(id=recipe.id, db=db)
+        expected = recipe
+        assert expected == actual
+
+        actual = db_ops.read_recipe(id=recipe.id, db=db)
+        expected = None
+        assert expected == actual

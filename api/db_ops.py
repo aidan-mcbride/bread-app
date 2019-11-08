@@ -65,3 +65,11 @@ def update_recipe(id: int, recipe_update: RecipeUpdate, db: Database) -> Recipe:
 
     response_data = Recipe(**db_record.getStore(), id=db_record["_key"])
     return response_data
+
+
+def delete_recipe(id: int, db: Database) -> Recipe:
+    collection = get_collection(db=db, collection="Recipes")
+    db_record = collection[id]
+    recipe = Recipe(**db_record.getStore(), id=id)
+    db_record.delete()
+    return recipe
