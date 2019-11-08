@@ -1,5 +1,6 @@
 from datetime import date
 
+from fastapi.encoders import jsonable_encoder
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -108,4 +109,40 @@ class TestReadRecipe:
 
         actual = response.status_code
         expected = HTTP_404_NOT_FOUND
+        assert expected == actual
+
+
+class TestUpdateRecipe:
+    update_data = dict(
+        notes="Recipe has been updated",
+        ingredients=[{"name": "milk", "quantity": 1, "unit": "cups"}],
+    )
+
+    def test_update(self):
+        recipe = create_random_recipe()
+        response = client.put(
+            "/recipes/{id}".format(id=recipe.id), json=self.update_data
+        )
+
+        actual = response.status_code
+        expected = HTTP_200_OK
+        assert expected == actual
+
+        actual = response.json()
+        expected = jsonable_encoder(recipe)
+        expected["notes"] = self.update_data["notes"]
+        expected["ingredients"] = self.update_data["ingredients"]
+        assert expected == actual
+
+    def test_update_not_found(self):
+        response = client.put("/recipes/0", json={})
+        actual = response.status_code
+        expected = HTTP_404_NOT_FOUND
+        assert expected == actual
+
+    def test_missing_request_body(self):
+        recipe = create_random_recipe()
+        response = client.put("/recipes/{id}".format(id=recipe.id))
+        actual = response.status_code
+        expected = HTTP_422_UNPROCESSABLE_ENTITY
         assert expected == actual

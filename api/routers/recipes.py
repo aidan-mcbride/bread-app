@@ -6,7 +6,7 @@ from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from api import db_ops
 from api.database import get_db
-from api.schemas.recipe import Recipe, RecipeCreate
+from api.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
 
 router = APIRouter()
 
@@ -29,4 +29,15 @@ def read_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
     recipe: Recipe = db_ops.read_recipe(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
+    return recipe
+
+
+@router.put("/{id}", response_model=Recipe)
+def update_recipe(
+    id: int, recipe_update: RecipeUpdate, db: Database = Depends(get_db)
+) -> Recipe:
+    recipe: Recipe = db_ops.read_recipe(db=db, id=id)
+    if not recipe:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
+    recipe = db_ops.update_recipe(id=id, recipe_update=recipe_update, db=db)
     return recipe
