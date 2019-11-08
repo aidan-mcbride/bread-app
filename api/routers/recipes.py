@@ -18,8 +18,7 @@ async def create_recipe(
     return db_ops.create_recipe(db=db, recipe_in=recipe_in)
 
 
-# @router.get("/", response_model=Recipe)
-@router.get("/")
+@router.get("/", response_model=List[Recipe])
 def read_recipes(db: Database = Depends(get_db)) -> List[Recipe]:
     return db_ops.read_recipes(db=db)
 
