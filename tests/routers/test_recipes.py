@@ -146,3 +146,30 @@ class TestUpdateRecipe:
         actual = response.status_code
         expected = HTTP_422_UNPROCESSABLE_ENTITY
         assert expected == actual
+
+
+class TestDeleteRecipe:
+    def test_delete(self):
+        recipe = create_random_recipe()
+        response = client.delete("/recipes/{id}".format(id=recipe.id))
+
+        actual = response.status_code
+        expected = HTTP_200_OK
+        assert expected == actual
+
+        actual = response.json()
+        expected = jsonable_encoder(recipe)
+        assert expected == actual
+
+        response = client.get("/recipes/{id}".format(id=recipe.id))
+        actual = response.status_code
+        expected = HTTP_404_NOT_FOUND
+        assert expected == actual
+
+    def test_delete_not_found(self):
+        # database is empty
+        response = client.delete("/recipes/0")
+
+        actual = response.status_code
+        expected = HTTP_404_NOT_FOUND
+        assert expected == actual

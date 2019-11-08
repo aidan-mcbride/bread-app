@@ -41,3 +41,12 @@ def update_recipe(
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
     recipe = db_ops.update_recipe(id=id, recipe_update=recipe_update, db=db)
     return recipe
+
+
+@router.delete("/{id}", response_model=Recipe)
+def delete_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
+    recipe: Recipe = db_ops.read_recipe(db=db, id=id)
+    if not recipe:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
+    recipe = db_ops.delete_recipe(db=db, id=id)
+    return recipe
