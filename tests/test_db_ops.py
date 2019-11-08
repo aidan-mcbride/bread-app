@@ -5,7 +5,7 @@ from starlette.testclient import TestClient
 from api import db_ops
 from api.database import get_test_db
 from api.main import app
-from api.schemas.recipe import Recipe
+from api.schemas.recipe import Recipe, RecipeUpdate
 from tests.utils import create_random_recipe, random_recipe
 
 client = TestClient(app)
@@ -46,6 +46,8 @@ def test_read_recipes():
     assert expected == actual
 
 
+# TODO: Organize into classes
+# TODO: organize db_ops by recipes, users in dir
 def test_read_recipe():
     db = get_test_db()
     expected = create_random_recipe()
@@ -57,4 +59,30 @@ def test_read_recipe_not_found():
     db = get_test_db()
     expected = None
     actual = db_ops.read_recipe(db=db, id=0)
+    assert expected == actual
+
+
+def test_update_recipe():
+    db = get_test_db()
+    start_recipe = create_random_recipe()
+    updated_notes = "Recipe has been updated"
+    updated_ingredients = [{"name": "milk", "quantity": 1, "unit": "cups"}]
+    recipe_update = RecipeUpdate(notes=updated_notes, ingredients=updated_ingredients)
+
+    updated_recipe = db_ops.update_recipe(
+        db=db, id=start_recipe.id, recipe_update=recipe_update
+    )
+
+    for field in start_recipe.dict():
+        if field != "ingredients" and field != "notes":
+            expected = getattr(start_recipe, field)
+            actual = getattr(updated_recipe, field)
+            assert expected == actual
+
+    actual = updated_recipe.notes
+    expected = updated_notes
+    assert expected == actual
+
+    actual = updated_recipe.ingredients
+    expected = updated_ingredients
     assert expected == actual

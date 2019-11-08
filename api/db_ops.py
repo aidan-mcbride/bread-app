@@ -9,7 +9,7 @@ from pyArango.database import Database
 from pyArango.theExceptions import DocumentNotFoundError
 
 from api.database import get_collection
-from api.schemas.recipe import Recipe, RecipeCreate, RecipeCreateToDB
+from api.schemas.recipe import Recipe, RecipeCreate, RecipeCreateToDB, RecipeUpdate
 
 
 def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
@@ -23,8 +23,8 @@ def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
     db_record = collection.createDocument(initDict=recipe_dict)
     db_record.save()
     # return database model
-    db_recipe = Recipe(**db_record.getStore(), id=db_record["_key"])
-    return db_recipe
+    reponse_data = Recipe(**db_record.getStore(), id=db_record["_key"])
+    return reponse_data
 
 
 def read_recipes(db: Database) -> List[Recipe]:
@@ -51,3 +51,17 @@ def read_recipe(id: int, db: Database) -> Recipe:
         recipe = None
 
     return recipe
+
+
+def update_recipe(id: int, recipe_update: RecipeUpdate, db: Database) -> Recipe:
+    collection = get_collection(db=db, collection="Recipes")
+
+    db_record = collection[id]
+    update_data = recipe_update.dict(skip_defaults=True)
+    for field in db_record.getStore():
+        if field in update_data:
+            db_record[field] = update_data[field]
+    db_record.save()
+
+    response_data = Recipe(**db_record.getStore(), id=db_record["_key"])
+    return response_data

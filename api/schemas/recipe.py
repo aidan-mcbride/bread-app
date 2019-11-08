@@ -53,15 +53,15 @@ class RecipeCreateToDB(RecipeCreate):
     date_created: date = date.today()
 
 
+# fields available to client when updating recipes
+class RecipeUpdate(RecipeBase):
+    shape: str = None  # optional to update
+
+
 # shared fields for recipes that have been saved to db
 class RecipeInDB(RecipeBase):
     id: int  # document _key from arangodb
     date_created: date  # added by create_recipe in db_ops
-
-
-# fields available to client when updating recipes
-class RecipeUpdate(RecipeInDB):
-    pass
 
 
 # data returned to client as response body
