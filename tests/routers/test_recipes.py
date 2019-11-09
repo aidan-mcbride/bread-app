@@ -87,6 +87,22 @@ class TestReadRecipes:
         expected = 5
         assert expected == actual
 
+    def test_read_skip_limit(self):
+        for _ in range(8):
+            create_random_recipe()
+        full_collection = client.get("/recipes/")
+        skip = 3
+        limit = 3
+        response = client.get(f"/recipes/?skip={skip}&limit={limit}")
+
+        actual = len(response.json())
+        expected = 3
+        assert expected == actual
+
+        actual = response.json()[0]
+        expected = full_collection.json()[skip]
+        assert expected == actual
+
 
 class TestReadRecipe:
     def test_read(self):
