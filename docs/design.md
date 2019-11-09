@@ -48,6 +48,7 @@ _While, by design, the application will only have one user - and as such not req
 ##### Back-End
 
 - **[FastAPI](https://fastapi.tiangolo.com/):** Python RESTful API framework
+- [pyArango](https://github.com/ArangoDB-Community/pyArango): Python driver for ArangoDB
 
 ###### _Dev Dependencies_
 

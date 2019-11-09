@@ -103,6 +103,8 @@ https://travis-ci.org/aidan-mcbride/bread-app
 
 I decided to use travis because I am already somewhat familiar with it.
 
+---
+
 #### 11/2/19
 
 **PROBLEM: pytest can't find module**
@@ -134,3 +136,150 @@ there are several solutions:
 3.  [run pytest with `pipenv run python -m pytest`, which will add the current working directory to the `sys.path`](https://docs.pytest.org/en/latest/usage.html#calling-pytest-through-python-m-pytest)
 
 Merged dev branch back into master once I got a working hello-world with tooling config. This will be my jumping-off point for the app.
+
+> Eric Elliott's 5 questions every unit test must answer:
+>
+> 1. What are you testing?
+> 2. What should it do?
+> 3. What is the _expected_ output?
+> 4. What is the _actual_ output?
+> 5. How can the test be reproduced? _(answered implicitly in > test structure by the code used to produce the `actual` > value)_
+>
+> ```python
+> def test_some_component():
+>   actual = 'what is the expected output?'
+>   expected = 'what is the expected output?'
+>
+>   assert expected == actual
+> ```
+>
+> example:
+>
+> ```python
+> def test_hello_world():
+>   response = client.get("/")
+>
+>   # test for status code
+>   actual = response.status_code
+>   expected = 200
+>   assert expected == actual
+>
+>   # test for response content
+>   actual = response.json()
+>   expected = {"msg": "Hello World"}
+>   assert expected == actual
+> ```
+
+I'm going to start into my app by following along to the [fastapi tutorial](https://fastapi.tiangolo.com/tutorial/first-steps/), but substituting my needs.
+
+Barring the parts about SQLAlchemy, [this section of the FastAPI docs has a good workflow for organizing api code into files](https://fastapi.tiangolo.com/tutorial/sql-databases/)
+
+to run pre-commit hook without actually committing:
+
+```sh
+pipenv run pre-commit run --all-files
+```
+
+to commit without running pytest hook
+
+```sh
+SKIP=pytest git commit
+```
+
+See here for explanation of `recipe = Recipe(**recipe_in.dict())` in `recipes.py`
+https://fastapi.tiangolo.com/tutorial/extra-models/#about-user_indict
+
+---
+
+#### 11/3/19
+
+**PROBLEM: How to add a testing database? Specifically, how to use ArangoDB in continuous integration?**
+
+In the final application, ArangoDB will be a docker container, but I don't know if that is feasible for running CI tests.
+
+I found [this Travis-CI documentation](https://docs.travis-ci.com/user/database-setup/) which explains how to use various databases with Travis-CI, though ArangoDB is not one of them.
+
+I found [this GitHub repo](https://github.com/brennv/arangodb-travis) that looks promising for learning how to integrate ArangoDB into Travis-CI.
+
+I found [This Travis-CI documentation on using docker](https://docs.travis-ci.com/user/docker/), and it may be that the best solution is to use the docker version of ArangoDB.
+
+The problem is, though, that I barely know how to just use ArangoDB in a python application; therefor, this is the path forward as I see it:
+
+1. Create a [spike](https://stackoverflow.com/questions/249969/why-are-tdd-spikes-called-spikes) on a new branch, Integrate local ArangoDB into existing endpoints _(GET, POST for collection)_.
+2. Set up tests to use separate test database locally
+3. Add database to Travis-CI config.
+
+---
+
+#### 11/4/19
+
+> **TODO:**
+>
+> - [x] Get database working at all
+
+**WHAT'S GOING ON IN [THIS EXAMPLE](https://fastapi.tiangolo.com/tutorial/nosql-databases/)**
+
+- `get_bucket()` initializes a database connection and returns a database that can be operated upon.
+  - this function is called anywhere that needs a database connection. _Can it be abstracted into a dependency or something?_
+- `get_user()` is a _db_op_, and the `bucket` is passed as a variable. It is unclear if a Couchbase `bucket` is equivalent to an ArangoDB `db` or `collection`.
+- `read_user()` is the _route_, and it is where `get_bucket()` is called, and the result of that is passed to `get_user()`
+
+**[PYARANGO FLOW](https://www.arangodb.com/tutorials/tutorial-python/)**
+
+1. initialize database connection
+2. create database if not exist
+3. create collection if not exist
+4. operate on collection
+
+pyArango's [method for converting a document to JSON](https://bioinfo.iric.ca/~daoudat/pyArango/document.html#pyArango.document.Document.toJson) is bugged, so in the `read_recipes()` function in `db_ops.py` are some work-arounds until that is fixed.
+
+---
+
+#### 11/5/19
+
+> **TODO:**
+> In spike:
+>
+> - [x] Add test db as override dependency in tests
+> - [x] Get both dbs using correct credentials
+> - [ ] See about giving breadapp user the power to create datbases.
+>
+> In `develop`:
+>
+> - [x] Rebuild spike with TDD (GET, POST to database)
+> - [x] Add ArangoDB Docker to travis config
+
+- [Using **Docker** in **Travis-CI**](https://docs.travis-ci.com/user/docker/)
+- [Using **ArangoDB** in **Docker**](https://www.arangodb.com/download-major/docker/)
+
+possible scripts for arango test db, if you don't want to just use root/no auth:
+
+```Travis
+  - docker run -d -p 8529:8529 -e ARANGO_NO_AUTH=1 arangodb/arangodb:3.5.1
+  - arangosh --server.authentication false
+  - db._createDatabase("breadapp_testing");
+  - var users = require("@arangodb/users");
+  - users.save("breadapp", "breadapp")
+  - users.grantDatabase("breadapp", "breadapp_testing");
+  - exit
+```
+
+---
+
+#### 11/6/19
+
+[Documentation for arangodb docker container](https://hub.docker.com/r/arangodb/arangodb/)
+
+[This version of the documentation - which includes the `document.toJson()` method](https://bioinfo.iric.ca/~daoudat/pyArango/index.html) is outdated. I don't even know how I found my way to that version of the docs. **[This is the up-to-date documentation.](https://pyarango.readthedocs.io/en/latest/)** This version includes the `document.getStore()` method, which returns a dictionary of the document.
+
+---
+
+#### 11/9/19
+
+[Python 'f-string' literal interpolation](https://www.python.org/dev/peps/pep-0498/), an alternative way to format strings.
+
+I see the term `skip` used consistently in place of `offset` when discussing NOSQL databases, so I am using `skip` in my code for now.
+
+**[ArangoDB Array operators](https://www.arangodb.com/docs/stable/aql/operators.html#array-comparison-operators)** - I am using the `ALL IN` operator to query for ingredients in a recipe.
+
+The ArangoDB **[`[*]` operator](https://www.arangodb.com/docs/stable/aql/advanced-array-operators.html#array-expansion)** iterates over all elements in an array.
