@@ -4,7 +4,6 @@ Functions for performing database operations(db ops)
 
 from typing import List
 
-# from fastapi import Query
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
 from pyArango.theExceptions import DocumentNotFoundError
@@ -51,8 +50,6 @@ def read_recipes(
         query = query + f"\nFILTER {ingredients} ALL IN recipe.ingredients[*].name"
     query = query + f"\nLIMIT {skip}, {limit}"
     query = query + "\nRETURN recipe"
-
-    print(query)
 
     results = db.AQLQuery(query)
 

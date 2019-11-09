@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pyArango.database import Database
 from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
@@ -20,9 +20,15 @@ async def create_recipe(
 
 @router.get("/", response_model=List[Recipe])
 def read_recipes(
-    db: Database = Depends(get_db), skip: int = 0, limit: int = 100, rating: int = None
+    db: Database = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    rating: int = None,
+    ingredients: List[str] = Query(None),
 ) -> List[Recipe]:
-    return db_ops.read_recipes(db=db, skip=skip, limit=limit, rating=rating)
+    return db_ops.read_recipes(
+        db=db, skip=skip, limit=limit, rating=rating, ingredients=ingredients
+    )
 
 
 @router.get("/{id}", response_model=Recipe)

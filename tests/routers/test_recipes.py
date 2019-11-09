@@ -114,6 +114,40 @@ class TestReadRecipes:
             expected = rating
             assert expected == actual
 
+    def test_read_filter_ingredient(self):
+        for _ in range(8):
+            create_random_recipe()
+        response = client.get("/recipes/?ingredients=salt")
+
+        for recipe in response.json():
+            has_salt = False
+            for ingredient in recipe["ingredients"]:
+                if ingredient["name"] == "salt":
+                    has_salt = True
+            assert has_salt is True
+
+    def test_read_filter_ingredients_multi(self):
+        for _ in range(8):
+            create_random_recipe()
+
+        response = client.get("/recipes/?ingredients=[salt,flour]")
+        """
+        ALT REQUEST FORMATS:
+         * /recipes/?ingredients=salt,flour
+         * /recipes/?ingredients=salt&ingredients=flour
+        """
+
+        for recipe in response.json():
+            has_salt = False
+            has_flour = False
+            for ingredient in recipe["ingredients"]:
+                if ingredient["name"] == "salt":
+                    has_salt = True
+                if ingredient["name"] == "flour":
+                    has_flour = True
+            assert has_salt is True
+            assert has_flour is True
+
 
 class TestReadRecipe:
     def test_read(self):
