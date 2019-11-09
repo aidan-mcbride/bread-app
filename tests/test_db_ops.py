@@ -47,6 +47,23 @@ class TestReadRecipes:
         # test recipe data
         assert expected == actual
 
+    def test_read_skip_limit(self):
+        db = get_test_db()
+        for _ in range(8):
+            create_random_recipe()
+        skip = 3
+        limit = 3
+        full_collection = db_ops.read_recipes(db=db)
+        response = db_ops.read_recipes(db=db, skip=skip, limit=limit)
+
+        actual = len(response)
+        expected = limit
+        assert expected == actual
+
+        actual = response[0]
+        expected = full_collection[skip]
+        assert expected == actual
+
 
 class TestReadRecipe:
     def test_read(self):

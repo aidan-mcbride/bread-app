@@ -27,11 +27,11 @@ def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
     return reponse_data
 
 
-def read_recipes(db: Database) -> List[Recipe]:
+def read_recipes(db: Database, skip: int = 0, limit: int = 100) -> List[Recipe]:
     collection = get_collection(db=db, collection="Recipes")
     recipes: List[Recipe] = list()
 
-    results = collection.fetchAll()
+    results = collection.fetchAll(skip=skip, limit=limit)
     for recipe in results:
         recipe_data = recipe.getStore()
         id = recipe_data["_key"]
