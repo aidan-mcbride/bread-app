@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -9,6 +10,14 @@ from api.database import get_db
 from api.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
 
 router = APIRouter()
+
+
+# TODO: Move to utilities file, use in db_ops for type validation
+# see:
+# https://fastapi.tiangolo.com/tutorial/path-params/#predefined-values
+class SortDirection(str, Enum):
+    asc = "asc"
+    desc = "desc"
 
 
 @router.post("/", status_code=HTTP_201_CREATED, response_model=Recipe)
@@ -25,6 +34,7 @@ def read_recipes(
     limit: int = 100,
     rating: int = None,
     sort_by: str = "id",
+    sort_dir: SortDirection = SortDirection("asc"),
     ingredients: List[str] = Query(None),
 ) -> List[Recipe]:
     return db_ops.read_recipes(
@@ -33,6 +43,7 @@ def read_recipes(
         limit=limit,
         rating=rating,
         ingredients=ingredients,
+        sort_dir=sort_dir,
         sort_by=sort_by,
     )
 

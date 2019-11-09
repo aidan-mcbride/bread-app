@@ -119,6 +119,23 @@ class TestReadRecipes:
             b = getattr(response[i + 1], sort_by)
             assert a <= b
 
+    def test_read_sort_dir(self):
+        db = get_test_db()
+        for _ in range(5):
+            create_random_recipe()
+
+        response = db_ops.read_recipes(db=db)
+        for i in range(len(response) - 1):
+            a = getattr(response[i], "id")
+            b = getattr(response[i + 1], "id")
+            assert a <= b
+
+        response = db_ops.read_recipes(db=db, sort_dir="DESC")
+        for i in range(len(response) - 1):
+            a = getattr(response[i], "id")
+            b = getattr(response[i + 1], "id")
+            assert a >= b
+
 
 class TestReadRecipe:
     def test_read(self):

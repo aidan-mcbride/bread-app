@@ -159,6 +159,22 @@ class TestReadRecipes:
             b = response.json()[i + 1][sort_by]
             assert a <= b
 
+    def test_read_sort_dir(self):
+        for _ in range(4):
+            create_random_recipe()
+
+        response = client.get(f"/recipes/")
+        for i in range(len(response.json()) - 1):
+            a = response.json()[i]["id"]
+            b = response.json()[i + 1]["id"]
+            assert a <= b
+
+        response = client.get(f"/recipes/?sort_dir=desc")
+        for i in range(len(response.json()) - 1):
+            a = response.json()[i]["id"]
+            b = response.json()[i + 1]["id"]
+            assert a >= b
+
 
 class TestReadRecipe:
     def test_read(self):

@@ -34,6 +34,7 @@ def read_recipes(
     rating: int = None,
     ingredients: List[str] = None,
     sort_by: str = "id",
+    sort_dir: str = "ASC",
 ) -> List[Recipe]:
     # ensure collection exists
     collection_name = "Recipes"
@@ -51,7 +52,7 @@ def read_recipes(
         query += f"\nFILTER {ingredients} ALL IN recipe.ingredients[*].name"
     if sort_by == "id":
         sort_by = "_key"
-    query += f"\nSORT recipe.{sort_by}"
+    query += f"\nSORT recipe.{sort_by} {sort_dir}"
     query += f"\nLIMIT {skip}, {limit}"
     query += "\nRETURN recipe"
 
