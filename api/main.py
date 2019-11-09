@@ -2,7 +2,12 @@ from fastapi import FastAPI
 
 from api.routers import recipes
 
-app = FastAPI()
+app = FastAPI(
+    title="Bread App API",
+    description="https://github.com/aidan-mcbride/bread-app",
+    version="1",
+)
+# https://fastapi.tiangolo.com/tutorial/application-configuration/
 
 
 @app.get("/")
