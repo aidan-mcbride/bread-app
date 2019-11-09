@@ -279,3 +279,7 @@ possible scripts for arango test db, if you don't want to just use root/no auth:
 [Python 'f-string' literal interpolation](https://www.python.org/dev/peps/pep-0498/), an alternative way to format strings.
 
 I see the term `skip` used consistently in place of `offset` when discussing NOSQL databases, so I am using `skip` in my code for now.
+
+**[ArangoDB Array operators](https://www.arangodb.com/docs/stable/aql/operators.html#array-comparison-operators)** - I am using the `ALL IN` operator to query for ingredients in a recipe.
+
+The ArangoDB **[`[*]` operator](https://www.arangodb.com/docs/stable/aql/advanced-array-operators.html#array-expansion)** iterates over all elements in an array.

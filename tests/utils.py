@@ -1,5 +1,6 @@
 import random
 import string
+from typing import List
 
 from api import db_ops
 from api.database import get_test_db
@@ -11,8 +12,15 @@ def random_lower_string(length: int = 32) -> str:
 
 
 def random_ingredient() -> Ingredient:
+    ingredient_names = [
+        "flour",
+        "water",
+        "salt",
+        "yeast",
+        random_lower_string(length=12),
+    ]
     ingredient = Ingredient(
-        name=random_lower_string(length=12),
+        name=random.choice(ingredient_names),
         quantity=random.uniform(1, 10),
         unit=random.choice(list(Unit)),
     )
@@ -29,7 +37,7 @@ def random_procedure() -> Procedure:
     return procedure
 
 
-def random_recipe() -> RecipeCreate:
+def random_recipe(required_ingredients: List[Ingredient] = list()) -> RecipeCreate:
     """
     return a randomized recipe as if sent from client
     """

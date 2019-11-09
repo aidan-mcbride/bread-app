@@ -4,6 +4,7 @@ Functions for performing database operations(db ops)
 
 from typing import List
 
+# from fastapi import Query
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
 from pyArango.theExceptions import DocumentNotFoundError
@@ -28,7 +29,11 @@ def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
 
 
 def read_recipes(
-    db: Database, skip: int = 0, limit: int = 100, rating: int = None
+    db: Database,
+    skip: int = 0,
+    limit: int = 100,
+    rating: int = None,
+    ingredient: str = None,
 ) -> List[Recipe]:
     # ensure collection exists
     collection_name = "Recipes"
@@ -42,6 +47,8 @@ def read_recipes(
     query = "FOR recipe IN Recipes"
     if rating is not None:
         query = query + f"\nFILTER recipe.rating == {rating}"
+    if ingredient is not None:
+        query = query + f"\nFILTER '{ingredient}' IN recipe.ingredients[*].name"
     query = query + f"\nLIMIT {skip}, {limit}"
     query = query + "\nRETURN recipe"
 
