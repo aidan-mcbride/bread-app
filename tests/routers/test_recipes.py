@@ -103,6 +103,17 @@ class TestReadRecipes:
         expected = full_collection.json()[skip]
         assert expected == actual
 
+    def test_read_filter_rating(self):
+        for _ in range(8):
+            create_random_recipe()
+        rating = 5
+        response = client.get(f"/recipes/?rating={rating}")
+
+        for recipe in response.json():
+            actual = recipe["rating"]
+            expected = rating
+            assert expected == actual
+
 
 class TestReadRecipe:
     def test_read(self):

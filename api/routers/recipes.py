@@ -20,9 +20,9 @@ async def create_recipe(
 
 @router.get("/", response_model=List[Recipe])
 def read_recipes(
-    db: Database = Depends(get_db), skip: int = 0, limit: int = 100
+    db: Database = Depends(get_db), skip: int = 0, limit: int = 100, rating: int = None
 ) -> List[Recipe]:
-    return db_ops.read_recipes(db=db, skip=skip, limit=limit)
+    return db_ops.read_recipes(db=db, skip=skip, limit=limit, rating=rating)
 
 
 @router.get("/{id}", response_model=Recipe)
