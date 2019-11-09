@@ -33,7 +33,7 @@ def read_recipes(
     skip: int = 0,
     limit: int = 100,
     rating: int = None,
-    ingredient: str = None,
+    ingredients: List[str] = None,
 ) -> List[Recipe]:
     # ensure collection exists
     collection_name = "Recipes"
@@ -47,10 +47,12 @@ def read_recipes(
     query = "FOR recipe IN Recipes"
     if rating is not None:
         query = query + f"\nFILTER recipe.rating == {rating}"
-    if ingredient is not None:
-        query = query + f"\nFILTER '{ingredient}' IN recipe.ingredients[*].name"
+    if ingredients is not None:
+        query = query + f"\nFILTER {ingredients} ALL IN recipe.ingredients[*].name"
     query = query + f"\nLIMIT {skip}, {limit}"
     query = query + "\nRETURN recipe"
+
+    print(query)
 
     results = db.AQLQuery(query)
 

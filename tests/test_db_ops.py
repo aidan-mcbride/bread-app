@@ -78,7 +78,7 @@ class TestReadRecipes:
         for _ in range(10):
             create_random_recipe()
 
-        response = db_ops.read_recipes(db=db, ingredient="flour")
+        response = db_ops.read_recipes(db=db, ingredients=["flour"])
 
         for recipe in response:
             has_flour = False
@@ -86,6 +86,24 @@ class TestReadRecipes:
                 if ingredient.name == "flour":
                     has_flour = True
             assert has_flour is True
+
+    def test_read_filter_by_ingredients_multi(self):
+        db = get_test_db()
+        for _ in range(10):
+            create_random_recipe()
+
+        response = db_ops.read_recipes(db=db, ingredients=["flour", "salt"])
+
+        for recipe in response:
+            has_flour = False
+            has_salt = False
+            for ingredient in recipe.ingredients:
+                if ingredient.name == "flour":
+                    has_flour = True
+                if ingredient.name == "salt":
+                    has_salt = True
+            assert has_flour is True
+            assert has_salt is True
 
 
 class TestReadRecipe:
