@@ -105,6 +105,20 @@ class TestReadRecipes:
             assert has_flour is True
             assert has_salt is True
 
+    def test_read_sort_by(self):
+        db = get_test_db()
+        for _ in range(5):
+            create_random_recipe()
+
+        sort_by = "servings"
+        response = db_ops.read_recipes(db=db, sort_by=sort_by)
+
+        # compare each item in list to the next item
+        for i in range(len(response) - 1):
+            a = getattr(response[i], sort_by)
+            b = getattr(response[i + 1], sort_by)
+            assert a <= b
+
 
 class TestReadRecipe:
     def test_read(self):

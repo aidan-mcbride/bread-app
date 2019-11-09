@@ -148,6 +148,17 @@ class TestReadRecipes:
             assert has_salt is True
             assert has_flour is True
 
+    def test_read_sort_by(self):
+        for _ in range(4):
+            create_random_recipe()
+        sort_by = "servings"
+        response = client.get(f"/recipes/?sort_by={sort_by}")
+
+        for i in range(len(response.json()) - 1):
+            a = response.json()[i][sort_by]
+            b = response.json()[i + 1][sort_by]
+            assert a <= b
+
 
 class TestReadRecipe:
     def test_read(self):

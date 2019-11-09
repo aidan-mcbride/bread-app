@@ -24,10 +24,16 @@ def read_recipes(
     skip: int = 0,
     limit: int = 100,
     rating: int = None,
+    sort_by: str = "id",
     ingredients: List[str] = Query(None),
 ) -> List[Recipe]:
     return db_ops.read_recipes(
-        db=db, skip=skip, limit=limit, rating=rating, ingredients=ingredients
+        db=db,
+        skip=skip,
+        limit=limit,
+        rating=rating,
+        ingredients=ingredients,
+        sort_by=sort_by,
     )
 
 
