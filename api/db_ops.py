@@ -27,11 +27,26 @@ def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
     return reponse_data
 
 
-def read_recipes(db: Database, skip: int = 0, limit: int = 100) -> List[Recipe]:
-    collection = get_collection(db=db, collection="Recipes")
+def read_recipes(
+    db: Database, skip: int = 0, limit: int = 100, rating: int = None
+) -> List[Recipe]:
+    # ensure collection exists
+    collection_name = "Recipes"
+    get_collection(db=db, collection=collection_name)
     recipes: List[Recipe] = list()
 
-    results = collection.fetchAll(skip=skip, limit=limit)
+    # results = collection.fetchAll(skip=skip, limit=limit)
+
+    # CONSTRUCT AQL QUERY
+    # TODO: abstract into query-builder function that returns a query
+    query = "FOR recipe IN Recipes"
+    if rating is not None:
+        query = query + f"\nFILTER recipe.rating == {rating}"
+    query = query + f"\nLIMIT {skip}, {limit}"
+    query = query + "\nRETURN recipe"
+
+    results = db.AQLQuery(query)
+
     for recipe in results:
         recipe_data = recipe.getStore()
         id = recipe_data["_key"]

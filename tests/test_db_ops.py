@@ -64,6 +64,15 @@ class TestReadRecipes:
         expected = full_collection[skip]
         assert expected == actual
 
+    def test_read_rating(self):
+        db = get_test_db()
+        for _ in range(20):
+            create_random_recipe()
+        response = db_ops.read_recipes(db=db, rating=3)
+
+        for recipe in response:
+            assert getattr(recipe, "rating") == 3
+
 
 class TestReadRecipe:
     def test_read(self):
