@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -8,16 +7,9 @@ from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from api import db_ops
 from api.database import get_db
 from api.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
+from api.utils import SortDirection
 
 router = APIRouter()
-
-
-# TODO: Move to utilities file, use in db_ops for type validation
-# see:
-# https://fastapi.tiangolo.com/tutorial/path-params/#predefined-values
-class SortDirection(str, Enum):
-    asc = "asc"
-    desc = "desc"
 
 
 @router.post("/", status_code=HTTP_201_CREATED, response_model=Recipe)
