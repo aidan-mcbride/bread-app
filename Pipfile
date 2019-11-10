@@ -17,6 +17,7 @@ requests = "*"
 [packages]
 fastapi = "*"
 pyarango = "*"
+passlib = {extras = ["bcrypt"],version = "*"}
 
 [requires]
 python_version = "3.7"

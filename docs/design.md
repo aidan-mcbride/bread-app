@@ -49,6 +49,7 @@ _While, by design, the application will only have one user - and as such not req
 
 - **[FastAPI](https://fastapi.tiangolo.com/):** Python RESTful API framework
 - [pyArango](https://github.com/ArangoDB-Community/pyArango): Python driver for ArangoDB
+- [passlib](https://passlib.readthedocs.io/en/stable/): Password hashing
 
 ###### _Dev Dependencies_
 
