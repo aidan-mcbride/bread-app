@@ -283,3 +283,22 @@ I see the term `skip` used consistently in place of `offset` when discussing NOS
 **[ArangoDB Array operators](https://www.arangodb.com/docs/stable/aql/operators.html#array-comparison-operators)** - I am using the `ALL IN` operator to query for ingredients in a recipe.
 
 The ArangoDB **[`[*]` operator](https://www.arangodb.com/docs/stable/aql/advanced-array-operators.html#array-expansion)** iterates over all elements in an array.
+
+---
+
+#### 11/10/19
+
+**General steps to add users:**
+
+1. Get users working on their own
+
+- Pydantic schemas with password hashing
+- db ops with password hashing
+- endpoints: POST `/`, GET `/`, `/id`, PUT `/id`, DELETE `/id`
+
+2. Add authentication
+
+- log in, log out, verify with JWT
+- require authentication for some endpoints
+
+3. Add user id to recipes created by that user.
