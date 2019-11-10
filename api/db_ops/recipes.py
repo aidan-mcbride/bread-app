@@ -1,5 +1,5 @@
 """
-Functions for performing database operations(db ops)
+Functions for performing database operations(db ops) on recipes
 """
 
 from typing import List

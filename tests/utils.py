@@ -57,7 +57,7 @@ def random_recipe(required_ingredients: List[Ingredient] = list()) -> RecipeCrea
 def create_random_recipe() -> Recipe:
     recipe_in = random_recipe()
     db = get_test_db()
-    return db_ops.create_recipe(db=db, recipe_in=recipe_in)
+    return db_ops.recipes.create_recipe(db=db, recipe_in=recipe_in)
 
 
 # tests for utilities
