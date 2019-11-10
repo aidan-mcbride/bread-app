@@ -4,6 +4,7 @@ from api import db_ops
 from api.database import get_collection, get_test_db
 from api.main import app
 from api.schemas.user import User
+from api.utils import verify_password_hash
 from tests.utils import random_user
 
 client = TestClient(app)
@@ -29,3 +30,4 @@ class TestCreateUser:
 
         assert hashed_password is not None
         assert hashed_password != user_in.password
+        assert verify_password_hash(user_in.password, hashed_password)
