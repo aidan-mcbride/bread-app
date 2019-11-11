@@ -9,7 +9,7 @@ from pyArango.database import Database
 from pyArango.theExceptions import DocumentNotFoundError
 
 from api.database import get_collection
-from api.schemas.user import User, UserCreate, UserCreateToDB
+from api.schemas.user import User, UserCreate, UserCreateToDB, UserUpdate
 from api.utils import hash_password
 
 
@@ -49,3 +49,20 @@ def read(id: int, db: Database) -> User:
     except DocumentNotFoundError:
         user = None
     return user
+
+
+def update(id: int, user_update: UserUpdate, db: Database) -> User:
+    collection = get_collection(db=db, collection="Users")
+
+    db_record = collection[id]
+    update_data = user_update.dict(skip_defaults=True)
+    for field in db_record.getStore():
+        if field in update_data:
+            db_record[field] = update_data[field]
+    if user_update.password:
+        hashed_password = hash_password(plain_password=user_update.password)
+        db_record["hashed_password"] = hashed_password
+    db_record.save()
+
+    response_data = User(**db_record.getStore(), id=db_record["_key"])
+    return response_data

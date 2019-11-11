@@ -3,9 +3,14 @@ from starlette.testclient import TestClient
 from api import db_ops
 from api.database import get_collection, get_test_db
 from api.main import app
-from api.schemas.user import User
+from api.schemas.user import User, UserUpdate
 from api.utils import verify_password_hash
-from tests.utils import create_random_user, random_user
+from tests.utils import (
+    create_random_user,
+    random_email_address,
+    random_lower_string,
+    random_user,
+)
 
 client = TestClient(app)
 
@@ -60,3 +65,33 @@ class TestReadUser:
         expected = None
         actual = db_ops.recipes.read(db=db, id=0)
         assert expected == actual
+
+
+class TestUpdateUser:
+    def test_update(self):
+        db = get_test_db()
+        start_user = create_random_user()
+        updated_email = random_email_address()
+        updated_password = random_lower_string()
+        updated_is_active = False
+        user_update = UserUpdate(
+            email=updated_email, password=updated_password, is_active=updated_is_active
+        )
+
+        updated_user = db_ops.users.update(
+            db=db, id=start_user.id, user_update=user_update
+        )
+
+        actual = updated_user.is_active
+        expected = updated_is_active
+        assert expected == actual
+
+        actual = updated_user.email
+        expected = updated_email
+        assert expected == actual
+
+        # test password hash
+        collection = get_collection(db=db, collection="Users")
+        actual = collection[updated_user.id].hashed_password
+        expected = updated_password
+        assert verify_password_hash(plain_password=expected, hashed_password=actual)

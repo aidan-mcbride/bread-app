@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, EmailStr  # , Schema
 
 
@@ -10,9 +12,15 @@ class UserCreate(UserBase):
 
 
 # data added to created recipe before being added to db
-class UserCreateToDB(UserCreate):
+class UserCreateToDB(UserBase):
     hashed_password: str
     is_active: bool = True
+
+
+class UserUpdate(UserBase):
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
+    is_active: Optional[bool] = True
 
 
 # data returned to client as response body
