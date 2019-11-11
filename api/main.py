@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from api.routers import recipes
+from api.routers import recipes, users
 
 app = FastAPI(
     title="Bread App API",
@@ -21,3 +21,4 @@ see: https://fastapi.tiangolo.com/tutorial/bigger-applications/#the-main-fastapi
 """
 
 app.include_router(recipes.router, prefix="/recipes", tags=["recipes"])
+app.include_router(users.router, prefix="/users", tags=["users"])
