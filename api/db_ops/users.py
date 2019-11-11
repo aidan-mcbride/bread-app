@@ -2,6 +2,8 @@
 Functions for performing database operations(db ops) on users
 """
 
+from typing import List
+
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
 
@@ -21,3 +23,16 @@ def create_user(db: Database, user_in: UserCreate) -> User:
 
     response_data = User(**db_record.getStore(), id=db_record["_key"])
     return response_data
+
+
+def read_users(db: Database) -> List[User]:
+    collection = get_collection(db=db, collection="Users")
+    users: List[User] = list()
+
+    results = collection.fetchAll()
+    for user in results:
+        user_data = user.getStore()
+        id = user_data["_key"]
+        users.append(User(**user_data, id=id))
+
+    return users

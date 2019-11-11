@@ -5,7 +5,7 @@ from api.database import get_collection, get_test_db
 from api.main import app
 from api.schemas.user import User
 from api.utils import verify_password_hash
-from tests.utils import random_user
+from tests.utils import create_random_user, random_user
 
 client = TestClient(app)
 
@@ -31,3 +31,18 @@ class TestCreateUser:
         assert hashed_password is not None
         assert hashed_password != user_in.password
         assert verify_password_hash(user_in.password, hashed_password)
+
+
+class TestReadUsers:
+    def test_read(self):
+        db = get_test_db()
+        expected = create_random_user()
+        response = db_ops.users.read_users(db=db)
+
+        actual = response
+        assert len(actual) == 1
+        assert isinstance(actual[0], User)
+
+        actual = response[0]
+        assert expected.email == actual.email
+        assert hasattr(actual, "id")
