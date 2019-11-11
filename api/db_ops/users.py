@@ -6,6 +6,7 @@ from typing import List
 
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
+from pyArango.theExceptions import DocumentNotFoundError
 
 from api.database import get_collection
 from api.schemas.user import User, UserCreate, UserCreateToDB
@@ -36,3 +37,15 @@ def read_users(db: Database) -> List[User]:
         users.append(User(**user_data, id=id))
 
     return users
+
+
+def read_user(id: int, db: Database) -> User:
+    collection = get_collection(db=db, collection="Users")
+    try:
+        results = collection[id]
+        user_data = results.getStore()
+        id = user_data["_key"]
+        user = User(**user_data, id=id)
+    except DocumentNotFoundError:
+        user = None
+    return user

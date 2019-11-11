@@ -46,3 +46,17 @@ class TestReadUsers:
         actual = response[0]
         assert expected.email == actual.email
         assert hasattr(actual, "id")
+
+
+class TestReadUser:
+    def test_read(self):
+        db = get_test_db()
+        expected = create_random_user()
+        actual = db_ops.users.read_user(db=db, id=expected.id)
+        assert expected == actual
+
+    def test_read_not_found(self):
+        db = get_test_db()
+        expected = None
+        actual = db_ops.recipes.read_recipe(db=db, id=0)
+        assert expected == actual
