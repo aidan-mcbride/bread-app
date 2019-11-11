@@ -66,3 +66,11 @@ def update(id: int, user_update: UserUpdate, db: Database) -> User:
 
     response_data = User(**db_record.getStore(), id=db_record["_key"])
     return response_data
+
+
+def delete(id: int, db: Database) -> User:
+    collection = get_collection(db=db, collection="Users")
+    db_record = collection[id]
+    user = User(**db_record.getStore(), id=id)
+    db_record.delete()
+    return user

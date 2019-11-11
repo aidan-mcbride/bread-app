@@ -95,3 +95,17 @@ class TestUpdateUser:
         actual = collection[updated_user.id].hashed_password
         expected = updated_password
         assert verify_password_hash(plain_password=expected, hashed_password=actual)
+
+
+class TestDeleteUser:
+    def test_delete(self):
+        db = get_test_db()
+        user = create_random_user()
+
+        actual = db_ops.users.delete(id=user.id, db=db)
+        expected = user
+        assert expected == actual
+
+        actual = db_ops.users.read(id=user.id, db=db)
+        expected = None
+        assert expected == actual
