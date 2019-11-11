@@ -40,7 +40,7 @@ class RecipeBase(BaseModel):
     rating: int = Schema(0, ge=0, le=5, description="rating from 0 to 5")
     # TODO: image upload with form data
     # image: UrlStr = None
-    notes: str = None
+    notes: Optional[str] = None
 
 
 # fields available to client when creating new recipes
@@ -55,7 +55,7 @@ class RecipeCreateToDB(RecipeCreate):
 
 # fields available to client when updating recipes
 class RecipeUpdate(RecipeBase):
-    shape: str = None  # optional to update
+    shape: Optional[str] = None
 
 
 # shared fields for recipes that have been saved to db
