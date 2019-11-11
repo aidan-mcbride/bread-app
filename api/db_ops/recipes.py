@@ -12,7 +12,7 @@ from api.database import get_collection
 from api.schemas.recipe import Recipe, RecipeCreate, RecipeCreateToDB, RecipeUpdate
 
 
-def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
+def create(db: Database, recipe_in: RecipeCreate) -> Recipe:
     # get or create collection
     collection = get_collection(db=db, collection="Recipes")
     # convert request body to database model
@@ -27,7 +27,7 @@ def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
     return reponse_data
 
 
-def read_recipes(
+def read_all(
     db: Database,
     skip: int = 0,
     limit: int = 100,
@@ -66,7 +66,7 @@ def read_recipes(
     return recipes
 
 
-def read_recipe(id: int, db: Database) -> Recipe:
+def read(id: int, db: Database) -> Recipe:
     collection = get_collection(db=db, collection="Recipes")
     try:
         results = collection[id]
@@ -79,7 +79,7 @@ def read_recipe(id: int, db: Database) -> Recipe:
     return recipe
 
 
-def update_recipe(id: int, recipe_update: RecipeUpdate, db: Database) -> Recipe:
+def update(id: int, recipe_update: RecipeUpdate, db: Database) -> Recipe:
     collection = get_collection(db=db, collection="Recipes")
 
     db_record = collection[id]
@@ -93,7 +93,7 @@ def update_recipe(id: int, recipe_update: RecipeUpdate, db: Database) -> Recipe:
     return response_data
 
 
-def delete_recipe(id: int, db: Database) -> Recipe:
+def delete(id: int, db: Database) -> Recipe:
     collection = get_collection(db=db, collection="Recipes")
     db_record = collection[id]
     recipe = Recipe(**db_record.getStore(), id=id)

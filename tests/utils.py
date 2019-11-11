@@ -61,7 +61,7 @@ def random_recipe() -> RecipeCreate:
 def create_random_recipe() -> Recipe:
     recipe_in = random_recipe()
     db = get_test_db()
-    return db_ops.recipes.create_recipe(db=db, recipe_in=recipe_in)
+    return db_ops.recipes.create(db=db, recipe_in=recipe_in)
 
 
 def random_user() -> UserCreate:
@@ -72,4 +72,4 @@ def random_user() -> UserCreate:
 def create_random_user() -> User:
     user_in = random_user()
     db = get_test_db()
-    return db_ops.users.create_user(db=db, user_in=user_in)
+    return db_ops.users.create(db=db, user_in=user_in)

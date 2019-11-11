@@ -14,7 +14,7 @@ class TestCreateUser:
     def test_create(self):
         user_in = random_user()
 
-        actual = db_ops.users.create_user(db=get_test_db(), user_in=user_in)
+        actual = db_ops.users.create(db=get_test_db(), user_in=user_in)
         assert isinstance(actual, User)
 
         assert actual.email == user_in.email
@@ -25,7 +25,7 @@ class TestCreateUser:
         db = get_test_db()
         collection = get_collection(db=db, collection="Users")
 
-        response = db_ops.users.create_user(db=get_test_db(), user_in=user_in)
+        response = db_ops.users.create(db=get_test_db(), user_in=user_in)
         hashed_password = collection[response.id].hashed_password
 
         assert hashed_password is not None
@@ -37,7 +37,7 @@ class TestReadUsers:
     def test_read(self):
         db = get_test_db()
         expected = create_random_user()
-        response = db_ops.users.read_users(db=db)
+        response = db_ops.users.read_all(db=db)
 
         actual = response
         assert len(actual) == 1
@@ -52,11 +52,11 @@ class TestReadUser:
     def test_read(self):
         db = get_test_db()
         expected = create_random_user()
-        actual = db_ops.users.read_user(db=db, id=expected.id)
+        actual = db_ops.users.read(db=db, id=expected.id)
         assert expected == actual
 
     def test_read_not_found(self):
         db = get_test_db()
         expected = None
-        actual = db_ops.recipes.read_recipe(db=db, id=0)
+        actual = db_ops.recipes.read(db=db, id=0)
         assert expected == actual

@@ -13,7 +13,7 @@ from api.schemas.user import User, UserCreate, UserCreateToDB
 from api.utils import hash_password
 
 
-def create_user(db: Database, user_in: UserCreate) -> User:
+def create(db: Database, user_in: UserCreate) -> User:
     collection = get_collection(db=db, collection="Users")
     hashed_password = hash_password(plain_password=user_in.password)
     user_to_db = UserCreateToDB(**user_in.dict(), hashed_password=hashed_password)
@@ -26,7 +26,7 @@ def create_user(db: Database, user_in: UserCreate) -> User:
     return response_data
 
 
-def read_users(db: Database) -> List[User]:
+def read_all(db: Database) -> List[User]:
     collection = get_collection(db=db, collection="Users")
     users: List[User] = list()
 
@@ -39,7 +39,7 @@ def read_users(db: Database) -> List[User]:
     return users
 
 
-def read_user(id: int, db: Database) -> User:
+def read(id: int, db: Database) -> User:
     collection = get_collection(db=db, collection="Users")
     try:
         results = collection[id]
