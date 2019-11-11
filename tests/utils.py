@@ -73,38 +73,3 @@ def create_random_user() -> User:
     user_in = random_user()
     db = get_test_db()
     return db_ops.users.create_user(db=db, user_in=user_in)
-
-
-# -----------------------------------------------------------------------
-
-# tests for utilities
-def test_random_lower_string():
-    actual = random_lower_string(length=10)
-    assert isinstance(actual, str)
-    assert len(actual) == 10
-
-
-def test_random_recipe():
-    actual = random_recipe()
-    expected = [
-        "shape",
-        "servings",
-        "rating",
-        "notes",
-        "ingredients",
-        "procedures",
-    ]
-    for field in expected:
-        assert hasattr(actual, field)
-
-    assert len(actual.ingredients) > 0
-    assert len(actual.procedures) > 0
-    assert isinstance(actual.ingredients[0], Ingredient)
-    assert isinstance(actual.procedures[0], Procedure)
-
-
-def test_random_user():
-    actual = random_user()
-    expected = ["email", "password"]
-    for field in expected:
-        assert hasattr(actual, field)
