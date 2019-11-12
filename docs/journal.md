@@ -318,3 +318,29 @@ The ArangoDB **[`[*]` operator](https://www.arangodb.com/docs/stable/aql/advance
 routes that require authentication have a _dependency_ of `get_current_user()`, which in turn has a _dependency_ of `get_token()`.
 
 #### 11/12/19
+
+*If I were to use ArangoDB again in the future for a real project, I would perhaps use the user's `email` as the `_key` in the database. I think this would implicitly validate for unique email addresses, while also removing the need to be able to query users by both `_key` and `email`. The downside to this would be that a user may be unable to change the email address associated with their account.*
+
+**I think the real best solution would be to embrace NOSQL and store users in an SQL database, while storing recipes in a document database.*
+
+
+**Total Authentication Flow:**
+
+1.	client submits `username` and `password` to `/login` API endpoint. `/login` function does:
+	1.	use `db_ops` to get user data from database, using `username`(email) as query parameter.
+		1.	If no user found with matching `username`(email), raise `HTTPException(400)` *(See FastAPI example)*
+		2.	`db_ops` must return a `hashed_password`, though it is important that this hashed password never finds its way into any response bodies.
+	2.	use passlib to verify that the client's `password` matches the one stored in the database
+		1.	If password does not check out, raise `HTTPException(400)`
+	2.	Generate JWT Token
+	3.	**return a `JWT Token`** to client.
+	4.	*Client stores token somewhere, send in header of future requests*
+2.	Client attempts to access a secure endpoint, and includes the `token` in the header of their request.
+3.	Secure endpoint has a ***dependency*** of `get_current_active_user`
+	1.	*`get_current_active_user` inherits from `get_current_user`, and additionally validates that the user's account is active.*
+	2.	`get_current_user` in turn has a *dependency* of **`get_token`**
+		1.	`get_token` is assigned to FastAPI's `OAuth2PasswordBearer`, with `tokenUrl="/login"` as a parameter.
+		2.	Decode JWT token, verify user identity from token data.
+			1.	If verification fails, raise exception
+		2.	get the user from the db using the token data.
+		3.	return user.
