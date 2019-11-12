@@ -302,3 +302,19 @@ The ArangoDB **[`[*]` operator](https://www.arangodb.com/docs/stable/aql/advance
 - require authentication for some endpoints
 
 3. Add user id to recipes created by that user.
+
+---
+
+#### 11/11/19
+
+[FastAPI docs on implementing security with OAuth2](https://fastapi.tiangolo.com/tutorial/security/first-steps/)
+
+**Password flow:**
+
+1. user(client) submits a `username` and `password` to a specific url on the API
+2. api verifies `username` and `password`, responds with a `token`
+3. client stores `token`, sends in header of all future requests.
+
+routes that require authentication have a _dependency_ of `get_current_user()`, which in turn has a _dependency_ of `get_token()`.
+
+#### 11/12/19
