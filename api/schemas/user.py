@@ -4,11 +4,12 @@ from pydantic import BaseModel, EmailStr  # , Schema
 
 
 class UserBase(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
 
 
 class UserCreate(UserBase):
+    email: EmailStr
     password: str
 
 
