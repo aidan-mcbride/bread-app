@@ -66,6 +66,12 @@ class TestReadUser:
         actual = db_ops.recipes.read(db=db, id=0)
         assert expected == actual
 
+    def test_read_by_email(self):
+        db = get_test_db()
+        expected = create_random_user()
+        actual = db_ops.users.read_by_email(db=db, email=expected.email)
+        assert expected == actual
+
 
 class TestUpdateUser:
     def test_update(self):

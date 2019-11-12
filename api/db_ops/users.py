@@ -7,6 +7,7 @@ from typing import List, Optional
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
 from pyArango.theExceptions import DocumentNotFoundError
+from pydantic import EmailStr
 
 from api.database import get_collection
 from api.schemas.user import User, UserCreate, UserCreateToDB, UserUpdate
@@ -43,6 +44,19 @@ def read(id: int, db: Database) -> Optional[User]:
     collection = get_collection(db=db, collection="Users")
     try:
         results = collection[id]
+    except DocumentNotFoundError:
+        return None
+    user_data = results.getStore()
+    id = user_data["_key"]
+    user = User(**user_data, id=id)
+    return user
+
+
+def read_by_email(email: EmailStr, db: Database) -> Optional[User]:
+    collection = get_collection(db=db, collection="Users")
+    try:
+        # https://pyarango.readthedocs.io/en/latest/collection/#pyArango.collection.Collection.fetchFirstExample
+        results = collection.fetchFirstExample({"email": email})[0]
     except DocumentNotFoundError:
         return None
     user_data = results.getStore()
