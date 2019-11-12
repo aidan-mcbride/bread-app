@@ -57,7 +57,8 @@ def read_by_email(email: EmailStr, db: Database) -> Optional[User]:
     try:
         # https://pyarango.readthedocs.io/en/latest/collection/#pyArango.collection.Collection.fetchFirstExample
         results = collection.fetchFirstExample({"email": email})[0]
-    except DocumentNotFoundError:
+    except IndexError:
+        # use IndexError here since fetchFirstExample returns a list
         return None
     user_data = results.getStore()
     id = user_data["_key"]

@@ -63,13 +63,21 @@ class TestReadUser:
     def test_read_not_found(self):
         db = get_test_db()
         expected = None
-        actual = db_ops.recipes.read(db=db, id=0)
+        actual = db_ops.users.read(db=db, id=0)
         assert expected == actual
 
+
+class TestReadUserByEmail:
     def test_read_by_email(self):
         db = get_test_db()
         expected = create_random_user()
         actual = db_ops.users.read_by_email(db=db, email=expected.email)
+        assert expected == actual
+
+    def test_read_not_found(self):
+        db = get_test_db()
+        expected = None
+        actual = db_ops.users.read_by_email(db=db, email="none@none.io")
         assert expected == actual
 
 
