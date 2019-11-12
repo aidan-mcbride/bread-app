@@ -40,7 +40,7 @@ def read_recipes(
 
 @router.get("/{id}", response_model=Recipe)
 def read_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
-    recipe: Recipe = db_ops.recipes.read(db=db, id=id)
+    recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
     return recipe
@@ -50,7 +50,7 @@ def read_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
 def update_recipe(
     id: int, recipe_update: RecipeUpdate, db: Database = Depends(get_db)
 ) -> Recipe:
-    recipe: Recipe = db_ops.recipes.read(db=db, id=id)
+    recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
     recipe = db_ops.recipes.update(id=id, recipe_update=recipe_update, db=db)
@@ -59,7 +59,7 @@ def update_recipe(
 
 @router.delete("/{id}", response_model=Recipe)
 def delete_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
-    recipe: Recipe = db_ops.recipes.read(db=db, id=id)
+    recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
     recipe = db_ops.recipes.delete(db=db, id=id)

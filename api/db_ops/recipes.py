@@ -2,7 +2,7 @@
 Functions for performing database operations(db ops) on recipes
 """
 
-from typing import List
+from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
@@ -66,16 +66,15 @@ def read_all(
     return recipes
 
 
-def read(id: int, db: Database) -> Recipe:
+def read(id: int, db: Database) -> Optional[Recipe]:
     collection = get_collection(db=db, collection="Recipes")
     try:
         results = collection[id]
-        recipe_data = results.getStore()
-        id = recipe_data["_key"]
-        recipe = Recipe(**recipe_data, id=id)
     except DocumentNotFoundError:
-        recipe = None
-
+        return None
+    recipe_data = results.getStore()
+    id = recipe_data["_key"]
+    recipe = Recipe(**recipe_data, id=id)
     return recipe
 
 

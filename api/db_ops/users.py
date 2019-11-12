@@ -2,7 +2,7 @@
 Functions for performing database operations(db ops) on users
 """
 
-from typing import List
+from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
@@ -39,15 +39,15 @@ def read_all(db: Database) -> List[User]:
     return users
 
 
-def read(id: int, db: Database) -> User:
+def read(id: int, db: Database) -> Optional[User]:
     collection = get_collection(db=db, collection="Users")
     try:
         results = collection[id]
-        user_data = results.getStore()
-        id = user_data["_key"]
-        user = User(**user_data, id=id)
     except DocumentNotFoundError:
-        user = None
+        return None
+    user_data = results.getStore()
+    id = user_data["_key"]
+    user = User(**user_data, id=id)
     return user
 
 
