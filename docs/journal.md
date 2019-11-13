@@ -343,3 +343,15 @@ _I think the real best solution would be to embrace NOSQL and store users in an 
          1. If verification fails, raise exception
       3. get the user from the db using the token data.
       4. return user.
+
+
+#### 11/13/19
+
+> **TODO:**
+>  - [ ] Refactor user models: see diagram
+>  - [ ] Refactor db_ops to return raw data to endpoint functions, which in turn return cleaned data to client
+>  - [ ] Implement authentication function in user db_ops
+>  - continue implementing authentication
+>  - make a diagram of how authentication works when done.
+
+I noticed in the FastAPI example project - which I am using as a reference - that the `User` in their `crud.py` file, which I assumed was a pydantic model, **is actually an SQLAlchemy model*.
