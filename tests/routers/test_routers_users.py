@@ -18,3 +18,4 @@ class TestCreateUser:
         actual = response.json()
         assert "id" in actual
         assert "password" not in actual
+        assert "hashed_password" not in actual
