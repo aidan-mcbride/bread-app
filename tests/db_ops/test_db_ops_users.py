@@ -32,6 +32,9 @@ class TestCreateUser:
         assert hashed_password != user_in.password
         assert verify_password_hash(user_in.password, hashed_password)
 
+        plain_password = collection[response.id].password
+        assert plain_password is None
+
 
 class TestReadUsers:
     def test_read(self):
