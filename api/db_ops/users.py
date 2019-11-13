@@ -9,11 +9,11 @@ from pyArango.database import Database
 from pyArango.theExceptions import DocumentNotFoundError
 
 from api.database import get_collection
-from api.schemas.user import User, UserCreate, UserCreateToDB, UserUpdate
+from api.schemas.user import UserCreate, UserCreateToDB, UserInDB, UserUpdate
 from api.utils import hash_password
 
 
-def create(db: Database, user_in: UserCreate) -> User:
+def create(db: Database, user_in: UserCreate) -> UserInDB:
     collection = get_collection(db=db, collection="Users")
     hashed_password = hash_password(plain_password=user_in.password)
     user_to_db = UserCreateToDB(**user_in.dict(), hashed_password=hashed_password)
@@ -22,24 +22,24 @@ def create(db: Database, user_in: UserCreate) -> User:
     db_record = collection.createDocument(initDict=user_dict)
     db_record.save()
 
-    response_data = User(**db_record.getStore(), id=db_record["_key"])
+    response_data = UserInDB(**db_record.getStore(), id=db_record["_key"])
     return response_data
 
 
-def read_all(db: Database) -> List[User]:
+def read_all(db: Database) -> List[UserInDB]:
     collection = get_collection(db=db, collection="Users")
-    users: List[User] = list()
+    users: List[UserInDB] = list()
 
     results = collection.fetchAll()
     for user in results:
         user_data = user.getStore()
         id = user_data["_key"]
-        users.append(User(**user_data, id=id))
+        users.append(UserInDB(**user_data, id=id))
 
     return users
 
 
-def read(id: int, db: Database) -> Optional[User]:
+def read(id: int, db: Database) -> Optional[UserInDB]:
     collection = get_collection(db=db, collection="Users")
     try:
         results = collection[id]
@@ -47,11 +47,11 @@ def read(id: int, db: Database) -> Optional[User]:
         return None
     user_data = results.getStore()
     id = user_data["_key"]
-    user = User(**user_data, id=id)
+    user = UserInDB(**user_data, id=id)
     return user
 
 
-def update(id: int, user_update: UserUpdate, db: Database) -> User:
+def update(id: int, user_update: UserUpdate, db: Database) -> UserInDB:
     collection = get_collection(db=db, collection="Users")
 
     db_record = collection[id]
@@ -64,13 +64,13 @@ def update(id: int, user_update: UserUpdate, db: Database) -> User:
         db_record["hashed_password"] = hashed_password
     db_record.save()
 
-    response_data = User(**db_record.getStore(), id=db_record["_key"])
+    response_data = UserInDB(**db_record.getStore(), id=db_record["_key"])
     return response_data
 
 
-def delete(id: int, db: Database) -> User:
+def delete(id: int, db: Database) -> UserInDB:
     collection = get_collection(db=db, collection="Users")
     db_record = collection[id]
-    user = User(**db_record.getStore(), id=id)
+    user = UserInDB(**db_record.getStore(), id=id)
     db_record.delete()
     return user

@@ -3,7 +3,7 @@ from starlette.testclient import TestClient
 from api import db_ops
 from api.database import get_collection, get_test_db
 from api.main import app
-from api.schemas.user import User, UserUpdate
+from api.schemas.user import UserInDB, UserUpdate
 from api.utils import verify_password_hash
 from tests.utils import (
     create_random_user,
@@ -20,7 +20,7 @@ class TestCreateUser:
         user_in = random_user()
 
         actual = db_ops.users.create(db=get_test_db(), user_in=user_in)
-        assert isinstance(actual, User)
+        assert isinstance(actual, UserInDB)
 
         assert actual.email == user_in.email
         assert hasattr(actual, "id")
@@ -46,7 +46,7 @@ class TestReadUsers:
 
         actual = response
         assert len(actual) == 1
-        assert isinstance(actual[0], User)
+        assert isinstance(actual[0], UserInDB)
 
         actual = response[0]
         assert expected.email == actual.email

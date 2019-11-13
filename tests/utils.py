@@ -4,7 +4,7 @@ import string
 from api import db_ops
 from api.database import get_test_db
 from api.schemas.recipe import Ingredient, Procedure, Recipe, RecipeCreate, Unit
-from api.schemas.user import User, UserCreate
+from api.schemas.user import UserCreate, UserInDB
 
 
 def random_lower_string(length: int = 32) -> str:
@@ -69,7 +69,7 @@ def random_user() -> UserCreate:
     return user
 
 
-def create_random_user() -> User:
+def create_random_user() -> UserInDB:
     user_in = random_user()
     db = get_test_db()
     return db_ops.users.create(db=db, user_in=user_in)
