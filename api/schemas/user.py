@@ -6,7 +6,6 @@ from pydantic import BaseModel, EmailStr  # , Schema
 # base class for all users
 class UserBase(BaseModel):
     email: Optional[EmailStr] = None
-    password: Optional[str] = None
     is_active: Optional[bool] = True
 
 
