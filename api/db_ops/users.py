@@ -11,7 +11,7 @@ from pydantic import EmailStr
 
 from api.database import get_collection
 from api.schemas.user import User, UserCreate, UserCreateToDB, UserUpdate
-from api.utils import hash_password
+from api.utils import hash_password, verify_password_hash
 
 
 def create(db: Database, user_in: UserCreate) -> User:
@@ -63,6 +63,17 @@ def read_by_email(email: EmailStr, db: Database) -> Optional[User]:
     user_data = results.getStore()
     id = user_data["_key"]
     user = User(**user_data, id=id)
+    return user
+
+
+def authenticate(db: Database, email: EmailStr, password: str) -> Optional[User]:
+    user = read_by_email(email=email, db=db)
+    if not user:
+        return None
+    if not verify_password_hash(
+        plain_password=password, hashed_password=user.hashed_password
+    ):
+        return None
     return user
 
 

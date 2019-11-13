@@ -1,8 +1,5 @@
-from starlette.testclient import TestClient
-
 from api import db_ops
 from api.database import get_collection, get_test_db
-from api.main import app
 from api.schemas.user import User, UserUpdate
 from api.utils import verify_password_hash
 from tests.utils import (
@@ -11,8 +8,6 @@ from tests.utils import (
     random_lower_string,
     random_user,
 )
-
-client = TestClient(app)
 
 
 class TestCreateUser:
@@ -78,6 +73,36 @@ class TestReadUserByEmail:
         db = get_test_db()
         expected = None
         actual = db_ops.users.read_by_email(db=db, email="none@none.io")
+        assert expected == actual
+
+
+class TestAuthenticateUser:
+    def test_authenticate(self):
+        db = get_test_db()
+        user_in = random_user()
+        user = db_ops.users.create(db=db, user_in=user_in)
+        actual = db_ops.users.authenticate(
+            db=db, email=user_in.email, password=user_in.password
+        )
+        expected = user
+        assert expected == actual
+
+    def test_authenticate_not_found(self):
+        db = get_test_db()
+        actual = db_ops.users.authenticate(
+            db=db, email="test@example.io", password="passsword123"
+        )
+        expected = None
+        assert expected == actual
+
+    def test_authenticate_bad_password(self):
+        db = get_test_db()
+        user_in = random_user()
+        db_ops.users.create(db=db, user_in=user_in)
+        actual = db_ops.users.authenticate(
+            db=db, email=user_in.email, password="BAD_PASSWORD"
+        )
+        expected = None
         assert expected == actual
 
 
