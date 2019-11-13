@@ -358,4 +358,4 @@ I noticed in the FastAPI example project - which I am using as a reference - tha
 
 **NEW USERS SCHEMA FLOW:**
 
-![New Users Schema Flow](docs/user-schema-flow.svg)
+![New Users Schema Flow](docs/diagrams/user-schema-flow.svg)

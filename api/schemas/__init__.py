@@ -1,3 +1,3 @@
-from . import recipe, user
+from . import recipe, token, user
 
-__all__ = ["recipe", "user"]
+__all__ = ["recipe", "user", "token"]

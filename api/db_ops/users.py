@@ -70,9 +70,7 @@ def authenticate(db: Database, email: EmailStr, password: str) -> Optional[UserI
     user = read_by_email(email=email, db=db)
     if not user:
         return None
-    if not verify_password_hash(
-        plain_password=password, hashed_password=user.hashed_password
-    ):
+    if not verify_password_hash(password, user.hashed_password):
         return None
     return user
 
