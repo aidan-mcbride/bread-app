@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from pyArango.database import Database
@@ -23,10 +25,14 @@ def login(
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST, detail="Incorrect email or password"
         )
-    # if not active user, disallow
+    elif not db_ops.users.is_active(user):
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Inactive user")
+    access_token_expires = timedelta(minutes=30)
     # TODO: move stuff like token expiry to config file
     token = Token(
-        access_token=create_access_token(data=dict(user_id=user.id)),
+        access_token=create_access_token(
+            data=dict(user_id=user.id), expires_delta=access_token_expires
+        ),
         token_type="bearer",
     )
     return token

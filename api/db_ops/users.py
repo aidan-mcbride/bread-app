@@ -75,6 +75,11 @@ def authenticate(db: Database, email: EmailStr, password: str) -> Optional[UserI
     return user
 
 
+# abstract verification function away from specific database field.
+def is_active(user) -> bool:
+    return user.is_active
+
+
 def update(id: int, user_update: UserUpdate, db: Database) -> UserInDB:
     collection = get_collection(db=db, collection="Users")
 
