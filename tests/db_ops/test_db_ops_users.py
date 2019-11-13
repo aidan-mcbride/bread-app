@@ -1,7 +1,7 @@
 from api import db_ops
 from api.database import get_collection, get_test_db
 from api.schemas.user import UserInDB, UserUpdate
-from api.utils import verify_password_hash
+from api.security import verify_password_hash
 from tests.utils import (
     create_random_user,
     random_email_address,

@@ -11,7 +11,7 @@ from pydantic import EmailStr
 
 from api.database import get_collection
 from api.schemas.user import UserCreate, UserCreateToDB, UserInDB, UserUpdate
-from api.utils import hash_password, verify_password_hash
+from api.security import hash_password, verify_password_hash
 
 
 def create(db: Database, user_in: UserCreate) -> UserInDB:

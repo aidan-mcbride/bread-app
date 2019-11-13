@@ -350,7 +350,7 @@ _I think the real best solution would be to embrace NOSQL and store users in an 
 >
 > - [x] Refactor user models: see diagram
 > - [x] Refactor db_ops to return raw data to endpoint functions, which in turn return cleaned data to client
-> - [ ] Implement authentication function in user db_ops
+> - [x] Implement authentication function in user db_ops
 > - continue implementing authentication
 > - make a diagram of how authentication works when done.
 
