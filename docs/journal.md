@@ -302,3 +302,56 @@ The ArangoDB **[`[*]` operator](https://www.arangodb.com/docs/stable/aql/advance
 - require authentication for some endpoints
 
 3. Add user id to recipes created by that user.
+
+---
+
+#### 11/11/19
+
+[FastAPI docs on implementing security with OAuth2](https://fastapi.tiangolo.com/tutorial/security/first-steps/)
+
+**Password flow:**
+
+1. user(client) submits a `username` and `password` to a specific url on the API
+2. api verifies `username` and `password`, responds with a `token`
+3. client stores `token`, sends in header of all future requests.
+
+routes that require authentication have a _dependency_ of `get_current_user()`, which in turn has a _dependency_ of `get_token()`.
+
+#### 11/12/19
+
+_If I were to use ArangoDB again in the future for a real project, I would perhaps use the user's `email` as the `_key` in the database. I think this would implicitly validate for unique email addresses, while also removing the need to be able to query users by both `_key` and `email`. The downside to this would be that a user may be unable to change the email address associated with their account._
+
+_I think the real best solution would be to embrace NOSQL and store users in an SQL database, while storing recipes in a document database._
+
+**Total Authentication Flow:**
+
+1. client submits `username` and `password` to `/login` API endpoint. `/login` function does:
+   1. use `db_ops` to get user data from database, using `username`(email) as query parameter.
+      1. If no user found with matching `username`(email), raise `HTTPException(400)` _(See FastAPI example)_
+      2. `db_ops` must return a `hashed_password`, though it is important that this hashed password never finds its way into any response bodies.
+   2. use passlib to verify that the client's `password` matches the one stored in the database
+      1. If password does not check out, raise `HTTPException(400)`
+   3. Generate JWT Token
+   4. **return a `JWT Token`** to client.
+   5. _Client stores token somewhere, send in header of future requests_
+2. Client attempts to access a secure endpoint, and includes the `token` in the header of their request.
+3. Secure endpoint has a **_dependency_** of `get_current_active_user`
+   1. _`get_current_active_user` inherits from `get_current_user`, and additionally validates that the user's account is active._
+   2. `get_current_user` in turn has a _dependency_ of **`get_token`**
+      1. `get_token` is assigned to FastAPI's `OAuth2PasswordBearer`, with `tokenUrl="/login"` as a parameter.
+      2. Decode JWT token, verify user identity from token data.
+         1. If verification fails, raise exception
+      3. get the user from the db using the token data.
+      4. return user.
+
+
+#### 11/13/19
+
+> **TODO:**
+>  - [ ] Refactor user models: see diagram
+>  - [ ] Refactor db_ops to return raw data to endpoint functions, which in turn return cleaned data to client
+>  - [ ] Implement authentication function in user db_ops
+>  - continue implementing authentication
+>  - make a diagram of how authentication works when done.
+
+I noticed in the FastAPI example project - which I am using as a reference - that the `User` in their `crud.py` file, which I assumed was a pydantic model, **is actually an SQLAlchemy model*.
