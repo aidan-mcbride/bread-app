@@ -10,8 +10,8 @@ from pyArango.theExceptions import DocumentNotFoundError
 from pydantic import EmailStr
 
 from api.database import get_collection
-from api.schemas.user import UserCreate, UserCreateToDB, UserInDB, UserUpdate  # , User
-from api.utils import hash_password  # , verify_password_hash
+from api.schemas.user import UserCreate, UserCreateToDB, UserInDB, UserUpdate
+from api.utils import hash_password, verify_password_hash
 
 
 def create(db: Database, user_in: UserCreate) -> UserInDB:
@@ -66,16 +66,15 @@ def read_by_email(email: EmailStr, db: Database) -> Optional[UserInDB]:
     return user
 
 
-#
-# def authenticate(db: Database, email: EmailStr, password: str) -> Optional[User]:
-#     user = read_by_email(email=email, db=db)
-#     if not user:
-#         return None
-#     if not verify_password_hash(
-#         plain_password=password, hashed_password=user.hashed_password
-#     ):
-#         return None
-#     return user
+def authenticate(db: Database, email: EmailStr, password: str) -> Optional[UserInDB]:
+    user = read_by_email(email=email, db=db)
+    if not user:
+        return None
+    if not verify_password_hash(
+        plain_password=password, hashed_password=user.hashed_password
+    ):
+        return None
+    return user
 
 
 def update(id: int, user_update: UserUpdate, db: Database) -> UserInDB:
