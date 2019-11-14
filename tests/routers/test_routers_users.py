@@ -1,7 +1,8 @@
-from starlette.status import HTTP_201_CREATED
+from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from starlette.testclient import TestClient
 
 from api.main import app
+from tests.utils import TESTING_USER_EMAIL
 
 client = TestClient(app)
 
@@ -19,3 +20,27 @@ class TestCreateUser:
         assert "id" in actual
         assert "password" not in actual
         assert "hashed_password" not in actual
+
+    def test_create_email_exists(self):
+        user_in = {"email": "test@email.io", "password": "test123"}
+        # create 'existing_user' in database with same email
+        client.post("/users/", json=user_in)
+
+        response = client.post("/users/", json=user_in)
+
+        actual = response.status_code
+        expected = HTTP_400_BAD_REQUEST
+        assert expected == actual
+
+        actual = client.get("/users/").json()
+        assert len(actual) == 1
+
+
+class TestReadCurrentUser:
+    # test_user_token_headers is a pytest fixture in conftest.py
+    def test_read(self, test_user_token_headers):
+        response = client.get("/users/me", headers=test_user_token_headers)
+
+        actual = response.json()["email"]
+        expected = TESTING_USER_EMAIL
+        assert expected == actual

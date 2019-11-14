@@ -22,8 +22,10 @@ class UserCreate(UserBase):
     password: str
 
 
-# hashed_password added on server before saving to db
-class UserCreateToDB(UserCreate):
+# hashed_password added on server before saving to db,
+# non-hashed password removed
+class UserCreateToDB(UserBase):
+    email: EmailStr
     hashed_password: str
 
 

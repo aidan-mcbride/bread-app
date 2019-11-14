@@ -2,6 +2,7 @@ import pytest
 
 from api.database import get_db, get_test_db
 from api.main import app
+from tests.utils import get_test_user_token_headers
 
 # override database with test database
 app.dependency_overrides[get_db] = get_test_db
@@ -16,3 +17,8 @@ def clean_db():
     yield
     db.dropAllCollections()
     db.reloadCollections()
+
+
+@pytest.fixture()
+def test_user_token_headers():
+    return get_test_user_token_headers()

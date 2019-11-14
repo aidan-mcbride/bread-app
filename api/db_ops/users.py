@@ -7,10 +7,11 @@ from typing import List, Optional
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
 from pyArango.theExceptions import DocumentNotFoundError
+from pydantic import EmailStr
 
 from api.database import get_collection
 from api.schemas.user import UserCreate, UserCreateToDB, UserInDB, UserUpdate
-from api.utils import hash_password
+from api.security import hash_password, verify_password_hash
 
 
 def create(db: Database, user_in: UserCreate) -> UserInDB:
@@ -49,6 +50,34 @@ def read(id: int, db: Database) -> Optional[UserInDB]:
     id = user_data["_key"]
     user = UserInDB(**user_data, id=id)
     return user
+
+
+def read_by_email(email: EmailStr, db: Database) -> Optional[UserInDB]:
+    collection = get_collection(db=db, collection="Users")
+    try:
+        # https://pyarango.readthedocs.io/en/latest/collection/#pyArango.collection.Collection.fetchFirstExample
+        results = collection.fetchFirstExample({"email": email})[0]
+    except IndexError:
+        # use IndexError here since fetchFirstExample returns a list
+        return None
+    user_data = results.getStore()
+    id = user_data["_key"]
+    user = UserInDB(**user_data, id=id)
+    return user
+
+
+def authenticate(db: Database, email: EmailStr, password: str) -> Optional[UserInDB]:
+    user = read_by_email(email=email, db=db)
+    if not user:
+        return None
+    if not verify_password_hash(password, user.hashed_password):
+        return None
+    return user
+
+
+# abstract verification function away from specific database field.
+def is_active(user) -> bool:
+    return user.is_active
 
 
 def update(id: int, user_update: UserUpdate, db: Database) -> UserInDB:

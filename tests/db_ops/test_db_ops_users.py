@@ -1,18 +1,13 @@
-from starlette.testclient import TestClient
-
 from api import db_ops
 from api.database import get_collection, get_test_db
-from api.main import app
 from api.schemas.user import UserInDB, UserUpdate
-from api.utils import verify_password_hash
+from api.security import verify_password_hash
 from tests.utils import (
     create_random_user,
     random_email_address,
     random_lower_string,
     random_user,
 )
-
-client = TestClient(app)
 
 
 class TestCreateUser:
@@ -36,6 +31,9 @@ class TestCreateUser:
         assert hashed_password is not None
         assert hashed_password != user_in.password
         assert verify_password_hash(user_in.password, hashed_password)
+
+        plain_password = collection[response.id].password
+        assert plain_password is None
 
 
 class TestReadUsers:
@@ -63,7 +61,51 @@ class TestReadUser:
     def test_read_not_found(self):
         db = get_test_db()
         expected = None
-        actual = db_ops.recipes.read(db=db, id=0)
+        actual = db_ops.users.read(db=db, id=0)
+        assert expected == actual
+
+
+class TestReadUserByEmail:
+    def test_read_by_email(self):
+        db = get_test_db()
+        expected = create_random_user()
+        actual = db_ops.users.read_by_email(db=db, email=expected.email)
+        assert expected == actual
+
+    def test_read_not_found(self):
+        db = get_test_db()
+        expected = None
+        actual = db_ops.users.read_by_email(db=db, email="none@none.io")
+        assert expected == actual
+
+
+class TestAuthenticateUser:
+    def test_authenticate(self):
+        db = get_test_db()
+        user_in = random_user()
+        user = db_ops.users.create(db=db, user_in=user_in)
+        actual = db_ops.users.authenticate(
+            db=db, email=user_in.email, password=user_in.password
+        )
+        expected = user
+        assert expected == actual
+
+    def test_authenticate_not_found(self):
+        db = get_test_db()
+        actual = db_ops.users.authenticate(
+            db=db, email="test@example.io", password="passsword123"
+        )
+        expected = None
+        assert expected == actual
+
+    def test_authenticate_bad_password(self):
+        db = get_test_db()
+        user_in = random_user()
+        db_ops.users.create(db=db, user_in=user_in)
+        actual = db_ops.users.authenticate(
+            db=db, email=user_in.email, password="BAD_PASSWORD"
+        )
+        expected = None
         assert expected == actual
 
 
