@@ -2,6 +2,7 @@ from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from starlette.testclient import TestClient
 
 from api.main import app
+from tests.utils import TESTING_USER_EMAIL
 
 client = TestClient(app)
 
@@ -35,25 +36,11 @@ class TestCreateUser:
         assert len(actual) == 1
 
 
-# TODO: Create test util for creating user, logging in, and getting a token
-
-
 class TestReadCurrentUser:
-    def test_read(self):
-        # ----
-        username = "test@email.io"
-        password = "test123"
-        user_in = {"email": username, "password": password}
-        user_in_db = client.post("/users/", json=user_in).json()
+    # test_user_token_headers is a pytest fixture in conftest.py
+    def test_read(self, test_user_token_headers):
+        response = client.get("/users/me", headers=test_user_token_headers)
 
-        credentials = {"username": username, "password": password}
-        response = client.post("/login", data=credentials)
-        access_token = response.json()["access_token"]
-        token_headers = {"Authorization": f"Bearer {access_token}"}
-        # ----
-
-        response = client.get("/users/me", headers=token_headers)
-
-        actual = response.json()
-        expected = user_in_db
+        actual = response.json()["email"]
+        expected = TESTING_USER_EMAIL
         assert expected == actual

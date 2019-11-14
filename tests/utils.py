@@ -1,10 +1,21 @@
 import random
 import string
 
+from starlette.testclient import TestClient
+
 from api import db_ops
 from api.database import get_test_db
+from api.main import app
 from api.schemas.recipe import Ingredient, Procedure, Recipe, RecipeCreate, Unit
 from api.schemas.user import UserCreate, UserInDB
+
+client = TestClient(app)
+
+"""
+User data for creating a non-random test user
+"""
+TESTING_USER_EMAIL = "test@example.io"
+TESTING_USER_PASSWORD = "password123"
 
 
 def random_lower_string(length: int = 32) -> str:
@@ -73,3 +84,20 @@ def create_random_user() -> UserInDB:
     user_in = random_user()
     db = get_test_db()
     return db_ops.users.create(db=db, user_in=user_in)
+
+
+# ----
+def create_test_user():
+    user_in = {"email": TESTING_USER_EMAIL, "password": TESTING_USER_PASSWORD}
+    return client.post("/users/", json=user_in)
+
+
+def get_test_user_token_headers():
+    user_in = {"email": TESTING_USER_EMAIL, "password": TESTING_USER_PASSWORD}
+    client.post("/users/", json=user_in)
+    # log in and get token
+    credentials = {"username": TESTING_USER_EMAIL, "password": TESTING_USER_PASSWORD}
+    response = client.post("/login", data=credentials)
+    access_token = response.json()["access_token"]
+    token_headers = {"Authorization": "Bearer {token}".format(token=access_token)}
+    return token_headers
