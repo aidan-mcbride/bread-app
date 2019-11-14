@@ -7,6 +7,7 @@ from pydantic import EmailStr
 from starlette.status import HTTP_400_BAD_REQUEST
 
 from api import db_ops
+from api.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from api.database import get_db
 from api.schemas.token import Token
 from api.security import create_access_token
@@ -17,7 +18,7 @@ router = APIRouter()
 @router.post("/login", response_model=Token)
 def login(
     db: Database = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
-) -> Token:
+) -> dict:
     email = EmailStr(form_data.username)
     password = form_data.password
     user = db_ops.users.authenticate(db=db, email=email, password=password)
@@ -27,12 +28,9 @@ def login(
         )
     elif not db_ops.users.is_active(user):
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Inactive user")
-    access_token_expires = timedelta(minutes=30)
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     # TODO: move stuff like token expiry to config file
-    token = Token(
-        access_token=create_access_token(
-            data=dict(user_id=user.id), expires_delta=access_token_expires
-        ),
-        token_type="bearer",
+    access_token = create_access_token(
+        data={"sub": user.id}, expires_delta=access_token_expires
     )
-    return token
+    return {"access_token": access_token, "token_type": "bearer"}

@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 
 import jwt
@@ -7,9 +6,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from passlib.context import CryptContext
 from pyArango.database import Database
-from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
+from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 
 from api import db_ops
+from api.config import JWT_ALGORITHM, JWT_SECRET_KEY
 from api.database import get_db
 
 # from api.schemas.token import TokenPayload
@@ -30,10 +30,6 @@ def verify_password_hash(plain_password: str, hashed_password: str):
 
 # ---------------------------------------------
 
-# TODO: move to some config file
-SECRET_KEY = str(os.getenv("JWT_SECRET_KEY"))
-ALGORITHM = str(os.getenv("JWT_ALGORITHM"))
-
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -42,7 +38,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
 
@@ -59,16 +55,24 @@ def get_current_user(db: Database = Depends(get_db), token: str = Depends(get_to
     decodes the given JWT token to obtain a user id,
     then returns that user in the database
     """
+    credentials_exception = HTTPException(
+        status_code=HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     # decode JWT token
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload["user_id"]
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
     except PyJWTError:
-        raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials"
-        )
+        raise credentials_exception
     # read and return user in db
     user = db_ops.users.read(db=db, id=user_id)
     if not user:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="User not found")
     return user
+
+
+# TODO: get current active user
