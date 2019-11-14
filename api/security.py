@@ -6,11 +6,16 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from passlib.context import CryptContext
 from pyArango.database import Database
-from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
+from starlette.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_404_NOT_FOUND,
+)
 
 from api import db_ops
 from api.config import JWT_ALGORITHM, JWT_SECRET_KEY
 from api.database import get_db
+from api.schemas.user import UserInDB
 
 # from api.schemas.token import TokenPayload
 
@@ -50,7 +55,9 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 get_token = OAuth2PasswordBearer(tokenUrl="/login")
 
 
-def get_current_user(db: Database = Depends(get_db), token: str = Depends(get_token)):
+def get_current_user(
+    db: Database = Depends(get_db), token: str = Depends(get_token)
+) -> UserInDB:
     """
     decodes the given JWT token to obtain a user id,
     then returns that user in the database
@@ -75,4 +82,7 @@ def get_current_user(db: Database = Depends(get_db), token: str = Depends(get_to
     return user
 
 
-# TODO: get current active user
+def get_current_active_user(current_user: UserInDB = Depends(get_current_user)):
+    if not db_ops.users.is_active(current_user):
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Inactive user")
+    return current_user
