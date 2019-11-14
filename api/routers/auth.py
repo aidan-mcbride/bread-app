@@ -29,7 +29,6 @@ def login(
     elif not db_ops.users.is_active(user):
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Inactive user")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    # TODO: move stuff like token expiry to config file
     access_token = create_access_token(
         data={"sub": user.id}, expires_delta=access_token_expires
     )

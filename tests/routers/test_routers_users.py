@@ -19,3 +19,27 @@ class TestCreateUser:
         assert "id" in actual
         assert "password" not in actual
         assert "hashed_password" not in actual
+
+
+# TODO: Create test util for creating user, logging in, and getting a token
+
+
+class TestReadCurrentUser:
+    def test_read(self):
+        # ----
+        username = "test@email.io"
+        password = "test123"
+        user_in = {"email": username, "password": password}
+        user_in_db = client.post("/users/", json=user_in).json()
+
+        credentials = {"username": username, "password": password}
+        response = client.post("/login", data=credentials)
+        access_token = response.json()["access_token"]
+        token_headers = {"Authorization": f"Bearer {access_token}"}
+        # ----
+
+        response = client.get("/users/me", headers=token_headers)
+
+        actual = response.json()
+        expected = user_in_db
+        assert expected == actual
