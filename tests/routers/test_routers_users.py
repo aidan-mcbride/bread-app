@@ -1,4 +1,4 @@
-from starlette.status import HTTP_201_CREATED
+from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from starlette.testclient import TestClient
 
 from api.main import app
@@ -19,6 +19,20 @@ class TestCreateUser:
         assert "id" in actual
         assert "password" not in actual
         assert "hashed_password" not in actual
+
+    def test_create_email_exists(self):
+        user_in = {"email": "test@email.io", "password": "test123"}
+        # create 'existing_user' in database with same email
+        client.post("/users/", json=user_in)
+
+        response = client.post("/users/", json=user_in)
+
+        actual = response.status_code
+        expected = HTTP_400_BAD_REQUEST
+        assert expected == actual
+
+        actual = client.get("/users/").json()
+        assert len(actual) == 1
 
 
 # TODO: Create test util for creating user, logging in, and getting a token
