@@ -52,6 +52,7 @@ _While, by design, the application will only have one user - and as such not req
 - [passlib](https://passlib.readthedocs.io/en/stable/): Password hashing
 - [PyJWT](https://pyjwt.readthedocs.io/en/latest/): for generating tokens
 - [python-multipart](https://andrew-d.github.io/python-multipart/): for accepting authentication credentials
+- [email-validator](https://github.com/JoshData/python-email-validator): used by pydantic for validating email addresses([see this](https://fastapi.tiangolo.com/#optional-dependencies))
 
 ###### _Dev Dependencies_
 
