@@ -20,7 +20,7 @@ router = APIRouter()
 
 
 @router.post("/", status_code=HTTP_201_CREATED, response_model=User)
-def create_recipe(user_in: UserCreate, db: Database = Depends(get_db)) -> UserInDB:
+def create_user(user_in: UserCreate, db: Database = Depends(get_db)) -> UserInDB:
     user = db_ops.users.read_by_email(db=db, email=user_in.email)
     print(user)
     if user:
@@ -31,7 +31,7 @@ def create_recipe(user_in: UserCreate, db: Database = Depends(get_db)) -> UserIn
     return db_ops.users.create(db=db, user_in=user_in)
 
 
-@router.get("/", response_model=List[User])
+@router.get("/", response_model=List[User], summary="Get All Users")
 def read_users(
     db: Database = Depends(get_db),
     current_user: UserInDB = Depends(get_current_active_user),
@@ -67,7 +67,7 @@ def update_current_user(
     return user
 
 
-@router.get("/{id}", response_model=User)
+@router.get("/{id}", response_model=User, summary="Get User By ID")
 def read_user(
     id: int,
     db: Database = Depends(get_db),

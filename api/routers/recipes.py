@@ -23,7 +23,7 @@ def create_recipe(
     return db_ops.recipes.create(db=db, recipe_in=recipe_in, creator_id=current_user.id)
 
 
-@router.get("/", response_model=List[Recipe])
+@router.get("/", response_model=List[Recipe], summary="Get All Recipes")
 def read_recipes(
     db: Database = Depends(get_db),
     skip: int = 0,
@@ -46,7 +46,7 @@ def read_recipes(
     )
 
 
-@router.get("/{id}", response_model=Recipe)
+@router.get("/{id}", response_model=Recipe, summary="Get Recipe By ID")
 def read_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
     recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
