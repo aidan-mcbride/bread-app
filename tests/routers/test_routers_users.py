@@ -3,6 +3,7 @@ from starlette.status import (
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
+    HTTP_404_NOT_FOUND,
 )
 from starlette.testclient import TestClient
 
@@ -91,4 +92,16 @@ class TestReadUser:
 
         actual = response.json()
         expected = user_json
+        assert expected == actual
+
+    def test_read_not_found(self, test_user_token_headers):
+        response = client.get("/users/0", headers=test_user_token_headers)
+        actual = response.status_code
+        expected = HTTP_404_NOT_FOUND
+        assert expected == actual
+
+    def test_read_not_authorized(self):
+        response = client.get("/users/0")
+        actual = response.status_code
+        expected = HTTP_401_UNAUTHORIZED
         assert expected == actual
