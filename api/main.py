@@ -10,9 +10,9 @@ app = FastAPI(
 # https://fastapi.tiangolo.com/tutorial/application-configuration/
 
 
-@app.get("/")
-async def read_main() -> dict:
-    return {"msg": "Hello World"}
+# @app.get("/")
+# async def read_main() -> dict:
+#     return {"msg": "Hello World"}
 
 
 """
