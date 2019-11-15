@@ -1,3 +1,4 @@
+from fastapi.encoders import jsonable_encoder
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -104,4 +105,24 @@ class TestReadUser:
         response = client.get("/users/0")
         actual = response.status_code
         expected = HTTP_401_UNAUTHORIZED
+        assert expected == actual
+
+
+class TestUpdateUserMe:
+    def test_update(self, test_user_token_headers):
+        user = client.get("/users/me", headers=test_user_token_headers).json()
+        update_data = dict(email="new@email.io")
+        response = client.put(
+            "/users/me".format(user["id"]),
+            json=update_data,
+            headers=test_user_token_headers,
+        )
+
+        actual = response.status_code
+        expected = HTTP_200_OK
+        assert expected == actual
+
+        actual = response.json()
+        expected = jsonable_encoder(user)
+        expected["email"] = update_data["email"]
         assert expected == actual

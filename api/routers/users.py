@@ -1,7 +1,9 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
+from pydantic import EmailStr
 from starlette.status import (
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
@@ -11,7 +13,7 @@ from starlette.status import (
 
 from api import db_ops
 from api.database import get_db
-from api.schemas.user import User, UserCreate, UserInDB
+from api.schemas.user import User, UserCreate, UserInDB, UserUpdate
 from api.security import get_current_active_user
 
 router = APIRouter()
@@ -43,6 +45,26 @@ def read_current_user(
     current_user: UserInDB = Depends(get_current_active_user),
 ):
     return current_user
+
+
+@router.put("/me", response_model=User)
+def update_current_user(
+    db: Database = Depends(get_db),
+    current_user: UserInDB = Depends(get_current_active_user),
+    password: str = Body(None),
+    email: EmailStr = Body(None),
+) -> UserInDB:
+    """
+    Update own user.
+    """
+    current_user_data = jsonable_encoder(current_user)
+    user_in = UserUpdate(**current_user_data)
+    if email is not None:
+        user_in.email = email
+    if password is not None:
+        user_in.password = password
+    user = db_ops.users.update(db=db, id=current_user.id, user_update=user_in)
+    return user
 
 
 @router.get("/{id}", response_model=User)
