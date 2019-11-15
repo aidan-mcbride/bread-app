@@ -72,9 +72,18 @@ def update_recipe(
 
 
 @router.delete("/{id}", response_model=Recipe)
-def delete_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
+def delete_recipe(
+    id: int,
+    db: Database = Depends(get_db),
+    current_user: UserInDB = Depends(get_current_active_user),
+) -> Recipe:
     recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
+    if recipe.creator_id != current_user.id:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail="User does not have permission to edit other user's recipes",
+        )
     recipe = db_ops.recipes.delete(db=db, id=id)
     return recipe

@@ -237,7 +237,7 @@ class TestUpdateRecipe:
         expected = HTTP_404_NOT_FOUND
         assert expected == actual
 
-    def test_missing_request_body(self, test_user_token_headers):
+    def test_update_missing_request_body(self, test_user_token_headers):
         creator_id = get_test_user().id
         recipe = create_random_recipe(creator_id=creator_id)
         response = client.put(
@@ -247,7 +247,7 @@ class TestUpdateRecipe:
         expected = HTTP_422_UNPROCESSABLE_ENTITY
         assert expected == actual
 
-    def test_wrong_user(self, test_user_token_headers):
+    def test_update_wrong_user(self, test_user_token_headers):
         recipe = create_random_recipe()
         response = client.put(
             "/recipes/{id}".format(id=recipe.id),
@@ -260,9 +260,12 @@ class TestUpdateRecipe:
 
 
 class TestDeleteRecipe:
-    def test_delete(self):
-        recipe = create_random_recipe()
-        response = client.delete("/recipes/{id}".format(id=recipe.id))
+    def test_delete(self, test_user_token_headers):
+        creator_id = get_test_user().id
+        recipe = create_random_recipe(creator_id=creator_id)
+        response = client.delete(
+            "/recipes/{id}".format(id=recipe.id), headers=test_user_token_headers
+        )
 
         actual = response.status_code
         expected = HTTP_200_OK
@@ -277,10 +280,20 @@ class TestDeleteRecipe:
         expected = HTTP_404_NOT_FOUND
         assert expected == actual
 
-    def test_delete_not_found(self):
+    def test_delete_not_found(self, test_user_token_headers):
         # database is empty
-        response = client.delete("/recipes/0")
+        response = client.delete("/recipes/0", headers=test_user_token_headers)
 
         actual = response.status_code
         expected = HTTP_404_NOT_FOUND
+        assert expected == actual
+
+    def test_delete_wrong_user(self, test_user_token_headers):
+        recipe = create_random_recipe()
+        response = client.delete(
+            "/recipes/{id}".format(id=recipe.id), headers=test_user_token_headers
+        )
+
+        actual = response.status_code
+        expected = HTTP_400_BAD_REQUEST
         assert expected == actual
