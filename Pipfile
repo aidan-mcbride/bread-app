@@ -17,6 +17,10 @@ requests = "*"
 [packages]
 fastapi = "*"
 pyarango = "*"
+passlib = {extras = ["bcrypt"],version = "*"}
+pyjwt = "*"
+python-multipart = "*"
+email-validator = "*"
 
 [requires]
 python_version = "3.7"

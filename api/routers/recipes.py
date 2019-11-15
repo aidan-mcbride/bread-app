@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -8,23 +7,14 @@ from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from api import db_ops
 from api.database import get_db
 from api.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
+from api.utils import SortDirection
 
 router = APIRouter()
 
 
-# TODO: Move to utilities file, use in db_ops for type validation
-# see:
-# https://fastapi.tiangolo.com/tutorial/path-params/#predefined-values
-class SortDirection(str, Enum):
-    asc = "asc"
-    desc = "desc"
-
-
 @router.post("/", status_code=HTTP_201_CREATED, response_model=Recipe)
-async def create_recipe(
-    recipe_in: RecipeCreate, db: Database = Depends(get_db)
-) -> Recipe:
-    return db_ops.create_recipe(db=db, recipe_in=recipe_in)
+def create_recipe(recipe_in: RecipeCreate, db: Database = Depends(get_db)) -> Recipe:
+    return db_ops.recipes.create(db=db, recipe_in=recipe_in)
 
 
 @router.get("/", response_model=List[Recipe])
@@ -37,7 +27,7 @@ def read_recipes(
     sort_dir: SortDirection = SortDirection("asc"),
     ingredients: List[str] = Query(None),
 ) -> List[Recipe]:
-    return db_ops.read_recipes(
+    return db_ops.recipes.read_all(
         db=db,
         skip=skip,
         limit=limit,
@@ -50,7 +40,7 @@ def read_recipes(
 
 @router.get("/{id}", response_model=Recipe)
 def read_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
-    recipe: Recipe = db_ops.read_recipe(db=db, id=id)
+    recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
     return recipe
@@ -60,17 +50,17 @@ def read_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
 def update_recipe(
     id: int, recipe_update: RecipeUpdate, db: Database = Depends(get_db)
 ) -> Recipe:
-    recipe: Recipe = db_ops.read_recipe(db=db, id=id)
+    recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
-    recipe = db_ops.update_recipe(id=id, recipe_update=recipe_update, db=db)
+    recipe = db_ops.recipes.update(id=id, recipe_update=recipe_update, db=db)
     return recipe
 
 
 @router.delete("/{id}", response_model=Recipe)
 def delete_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
-    recipe: Recipe = db_ops.read_recipe(db=db, id=id)
+    recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
-    recipe = db_ops.delete_recipe(db=db, id=id)
+    recipe = db_ops.recipes.delete(db=db, id=id)
     return recipe
