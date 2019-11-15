@@ -4,13 +4,14 @@ from fastapi.encoders import jsonable_encoder
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
 from starlette.testclient import TestClient
 
 from api.main import app
-from tests.utils import create_random_recipe
+from tests.utils import create_random_recipe, get_test_user
 
 client = TestClient(app)
 
@@ -211,10 +212,13 @@ class TestUpdateRecipe:
         ingredients=[{"name": "milk", "quantity": 1, "unit": "cups"}],
     )
 
-    def test_update(self):
-        recipe = create_random_recipe()
+    def test_update(self, test_user_token_headers):
+        creator_id = get_test_user().id
+        recipe = create_random_recipe(creator_id=creator_id)
         response = client.put(
-            "/recipes/{id}".format(id=recipe.id), json=self.update_data
+            "/recipes/{id}".format(id=recipe.id),
+            json=self.update_data,
+            headers=test_user_token_headers,
         )
 
         actual = response.status_code
@@ -227,17 +231,31 @@ class TestUpdateRecipe:
         expected["ingredients"] = self.update_data["ingredients"]
         assert expected == actual
 
-    def test_update_not_found(self):
-        response = client.put("/recipes/0", json={})
+    def test_update_not_found(self, test_user_token_headers):
+        response = client.put("/recipes/0", json={}, headers=test_user_token_headers)
         actual = response.status_code
         expected = HTTP_404_NOT_FOUND
         assert expected == actual
 
-    def test_missing_request_body(self):
-        recipe = create_random_recipe()
-        response = client.put("/recipes/{id}".format(id=recipe.id))
+    def test_missing_request_body(self, test_user_token_headers):
+        creator_id = get_test_user().id
+        recipe = create_random_recipe(creator_id=creator_id)
+        response = client.put(
+            "/recipes/{id}".format(id=recipe.id), headers=test_user_token_headers
+        )
         actual = response.status_code
         expected = HTTP_422_UNPROCESSABLE_ENTITY
+        assert expected == actual
+
+    def test_wrong_user(self, test_user_token_headers):
+        recipe = create_random_recipe()
+        response = client.put(
+            "/recipes/{id}".format(id=recipe.id),
+            json={},
+            headers=test_user_token_headers,
+        )
+        actual = response.status_code
+        expected = HTTP_400_BAD_REQUEST
         assert expected == actual
 
 

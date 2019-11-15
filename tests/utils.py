@@ -2,6 +2,7 @@ import random
 import string
 from typing import Optional
 
+from pydantic import EmailStr
 from starlette.testclient import TestClient
 
 from api import db_ops
@@ -93,6 +94,11 @@ def create_random_user() -> UserInDB:
 def create_test_user():
     user_in = {"email": TESTING_USER_EMAIL, "password": TESTING_USER_PASSWORD}
     return client.post("/users/", json=user_in)
+
+
+def get_test_user() -> Optional[UserInDB]:
+    email = EmailStr(TESTING_USER_EMAIL)
+    return db_ops.users.read_by_email(db=get_test_db(), email=email)
 
 
 def get_test_user_token_headers():

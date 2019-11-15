@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pyArango.database import Database
-from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
+from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
 from api import db_ops
 from api.database import get_db
@@ -54,11 +54,19 @@ def read_recipe(id: int, db: Database = Depends(get_db)) -> Recipe:
 
 @router.put("/{id}", response_model=Recipe)
 def update_recipe(
-    id: int, recipe_update: RecipeUpdate, db: Database = Depends(get_db)
+    id: int,
+    recipe_update: RecipeUpdate,
+    db: Database = Depends(get_db),
+    current_user: UserInDB = Depends(get_current_active_user),
 ) -> Recipe:
     recipe = db_ops.recipes.read(db=db, id=id)
     if not recipe:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Recipe not found")
+    if recipe.creator_id != current_user.id:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail="User does not have permission to edit other user's recipes",
+        )
     recipe = db_ops.recipes.update(id=id, recipe_update=recipe_update, db=db)
     return recipe
 
