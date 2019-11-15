@@ -12,11 +12,11 @@ from api.database import get_collection
 from api.schemas.recipe import Recipe, RecipeCreate, RecipeCreateToDB, RecipeUpdate
 
 
-def create(db: Database, recipe_in: RecipeCreate) -> Recipe:
+def create(db: Database, recipe_in: RecipeCreate, creator_id: int) -> Recipe:
     # get or create collection
     collection = get_collection(db=db, collection="Recipes")
     # convert request body to database model
-    recipe_to_db = RecipeCreateToDB(**recipe_in.dict())
+    recipe_to_db = RecipeCreateToDB(**recipe_in.dict(), creator_id=creator_id)
     # convert database model to json with fastapi tool
     recipe_dict = jsonable_encoder(recipe_to_db)
     # add record to db and save

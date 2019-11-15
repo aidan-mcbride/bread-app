@@ -27,29 +27,31 @@ class TestCreateRecipe:
         "notes": "string",
     }
 
-    def test_create(self):
-        response = client.post("/recipes/", json=self.mock_recipe)
+    def test_create(self, test_user_token_headers):
+        response = client.post(
+            "/recipes/", json=self.mock_recipe, headers=test_user_token_headers
+        )
 
-        # test status code
         actual = response.status_code
         expected = HTTP_201_CREATED
         assert expected == actual
 
-        # test response body has id
         actual = response.json()
         assert "id" in actual
-        assert isinstance(actual["id"], int)
+        assert "creator_id" in actual
 
-        # test response body has date added and is otherwise correct
         today = date.today().strftime("%Y-%m-%d")
         expected = self.mock_recipe
         expected["date_created"] = today
         expected["id"] = actual["id"]
+        expected["creator_id"] = actual["creator_id"]
         assert expected == actual
 
-    def test_create_optionals(self):
+    def test_create_optionals(self, test_user_token_headers):
         minimum_recipe = {"shape": "string"}
-        response = client.post("/recipes/", json=minimum_recipe)
+        response = client.post(
+            "/recipes/", json=minimum_recipe, headers=test_user_token_headers
+        )
 
         actual = response.json()
         expected = {
@@ -60,13 +62,16 @@ class TestCreateRecipe:
             "rating": 0,
             "notes": None,
             "id": actual["id"],
+            "creator_id": actual["creator_id"],
             "date_created": date.today().strftime("%Y-%m-%d"),
         }
         assert expected == actual
 
-    def test_bad_request_body(self):
+    def test_bad_request_body(self, test_user_token_headers):
         request_body = {}
-        response = client.post("/recipes/", json=request_body)
+        response = client.post(
+            "/recipes/", json=request_body, headers=test_user_token_headers
+        )
         actual = response.status_code
         expected = HTTP_422_UNPROCESSABLE_ENTITY
         assert expected == actual

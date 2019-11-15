@@ -7,14 +7,20 @@ from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from api import db_ops
 from api.database import get_db
 from api.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
+from api.schemas.user import UserInDB
+from api.security import get_current_active_user
 from api.utils import SortDirection
 
 router = APIRouter()
 
 
 @router.post("/", status_code=HTTP_201_CREATED, response_model=Recipe)
-def create_recipe(recipe_in: RecipeCreate, db: Database = Depends(get_db)) -> Recipe:
-    return db_ops.recipes.create(db=db, recipe_in=recipe_in)
+def create_recipe(
+    recipe_in: RecipeCreate,
+    db: Database = Depends(get_db),
+    current_user: UserInDB = Depends(get_current_active_user),
+) -> Recipe:
+    return db_ops.recipes.create(db=db, recipe_in=recipe_in, creator_id=current_user.id)
 
 
 @router.get("/", response_model=List[Recipe])

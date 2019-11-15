@@ -6,7 +6,7 @@ from api import db_ops
 from api.database import get_test_db
 from api.main import app
 from api.schemas.recipe import Recipe, RecipeUpdate
-from tests.utils import create_random_recipe, random_recipe
+from tests.utils import create_random_recipe, create_random_user, random_recipe
 
 client = TestClient(app)
 
@@ -14,15 +14,20 @@ client = TestClient(app)
 class TestCreateRecipe:
     def test_create(self):
         recipe_in = random_recipe()
+        creator = create_random_user()
 
-        actual = db_ops.recipes.create(db=get_test_db(), recipe_in=recipe_in)
+        actual = db_ops.recipes.create(
+            db=get_test_db(), recipe_in=recipe_in, creator_id=creator.id
+        )
         assert isinstance(actual, Recipe)
         # confirm that id added by db is valid
         assert hasattr(actual, "id")
         id = actual.dict()["id"]
         assert isinstance(id, int)
         # use actual's id for test recipe, since it is generated in db
-        expected = Recipe(**recipe_in.dict(), id=id, date_created=date.today())
+        expected = Recipe(
+            **recipe_in.dict(), id=id, date_created=date.today(), creator_id=creator.id
+        )
         assert expected == actual
 
 

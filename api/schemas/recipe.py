@@ -31,7 +31,6 @@ class Procedure(BaseModel):
 
 # shared fields for all recipes
 class RecipeBase(BaseModel):
-    # TODO: creator: ArangoDB _key
     ingredients: List[Ingredient] = list()
     procedures: List[Procedure] = list()
     shape: Optional[str] = None
@@ -51,6 +50,7 @@ class RecipeCreate(RecipeBase):
 
 # date is added to created recipe before being added to db
 class RecipeCreateToDB(RecipeCreate):
+    creator_id: int
     date_created: date = date.today()
 
 
@@ -62,6 +62,7 @@ class RecipeUpdate(RecipeBase):
 # shared fields for recipes that have been saved to db
 class RecipeInDB(RecipeBase):
     id: int  # document _key from arangodb
+    creator_id: int  # document _key for user in arangodb
     date_created: date  # added by create_recipe in db_ops
 
 

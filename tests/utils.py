@@ -1,5 +1,6 @@
 import random
 import string
+from typing import Optional
 
 from starlette.testclient import TestClient
 
@@ -69,10 +70,12 @@ def random_recipe() -> RecipeCreate:
     return recipe
 
 
-def create_random_recipe() -> Recipe:
+def create_random_recipe(creator_id: Optional[int] = None) -> Recipe:
     recipe_in = random_recipe()
+    if not creator_id:
+        creator_id = create_random_user().id
     db = get_test_db()
-    return db_ops.recipes.create(db=db, recipe_in=recipe_in)
+    return db_ops.recipes.create(db=db, recipe_in=recipe_in, creator_id=creator_id)
 
 
 def random_user() -> UserCreate:
