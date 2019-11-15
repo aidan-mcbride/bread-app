@@ -2,7 +2,12 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from pyArango.database import Database
-from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from starlette.status import (
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_404_NOT_FOUND,
+)
 
 from api import db_ops
 from api.database import get_db
@@ -38,3 +43,20 @@ def read_current_user(
     current_user: UserInDB = Depends(get_current_active_user),
 ):
     return current_user
+
+
+@router.get("/{id}", response_model=User)
+def read_user(
+    id: int,
+    db: Database = Depends(get_db),
+    current_user: UserInDB = Depends(get_current_active_user),
+):
+    user = db_ops.users.read(db=db, id=id)
+    if not user:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="User not found")
+    if user != current_user:
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="The user does not have sufficient privileges to access other users",
+        )
+    return user

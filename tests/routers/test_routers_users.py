@@ -80,3 +80,15 @@ class TestReadCurrentUser:
         actual = client.get("/users/me").status_code
         expected = HTTP_401_UNAUTHORIZED
         assert expected == actual
+
+
+class TestReadUser:
+    def test_read(self, test_user_token_headers):
+        user_json = client.get("/users/", headers=test_user_token_headers).json()[0]
+        response = client.get(
+            "/users/{id}".format(id=user_json["id"]), headers=test_user_token_headers
+        )
+
+        actual = response.json()
+        expected = user_json
+        assert expected == actual
