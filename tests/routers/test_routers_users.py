@@ -113,7 +113,25 @@ class TestUpdateUserMe:
         user = client.get("/users/me", headers=test_user_token_headers).json()
         update_data = dict(email="new@email.io")
         response = client.put(
-            "/users/me".format(user["id"]),
+            "/users/me", json=update_data, headers=test_user_token_headers,
+        )
+
+        actual = response.status_code
+        expected = HTTP_200_OK
+        assert expected == actual
+
+        actual = response.json()
+        expected = jsonable_encoder(user)
+        expected["email"] = update_data["email"]
+        assert expected == actual
+
+
+class TestUpdateUser:
+    def test_update(self, test_user_token_headers):
+        user = client.get("/users/", headers=test_user_token_headers).json()[0]
+        update_data = dict(email="new@email.io")
+        response = client.put(
+            "/users/{id}".format(id=user["id"]),
             json=update_data,
             headers=test_user_token_headers,
         )

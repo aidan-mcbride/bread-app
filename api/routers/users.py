@@ -82,3 +82,17 @@ def read_user(
             detail="The user does not have sufficient privileges to access other users",
         )
     return user
+
+
+@router.put("/{id}", response_model=User)
+def update_user(
+    id: int,
+    user_update: UserUpdate,
+    db: Database = Depends(get_db),
+    current_user: UserInDB = Depends(get_current_active_user),
+):
+    user = db_ops.users.read(db=db, id=id)
+    if not user:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="User not found")
+    user = db_ops.users.update(db=db, id=id, user_update=user_update)
+    return user
