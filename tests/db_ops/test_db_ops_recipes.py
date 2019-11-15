@@ -110,6 +110,19 @@ class TestReadRecipes:
             assert has_flour is True
             assert has_salt is True
 
+    def test_read_filter_by_creator_id(self):
+        db = get_test_db()
+        user = create_random_user()
+        for _ in range(10):
+            create_random_recipe()
+        for _ in range(5):
+            create_random_recipe(creator_id=user.id)
+        response = db_ops.recipes.read_all(db=db, creator_id=user.id)
+
+        assert len(response) == 5
+        for recipe in response:
+            assert getattr(recipe, "creator_id") == user.id
+
     def test_read_sort_by(self):
         db = get_test_db()
         for _ in range(5):

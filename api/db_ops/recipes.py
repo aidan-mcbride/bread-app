@@ -32,6 +32,7 @@ def read_all(
     skip: int = 0,
     limit: int = 100,
     rating: int = None,
+    creator_id: int = None,
     ingredients: List[str] = None,
     sort_by: str = "id",
     sort_dir: str = "ASC",
@@ -48,6 +49,8 @@ def read_all(
     query = "FOR recipe IN Recipes"
     if rating is not None:
         query += f"\nFILTER recipe.rating == {rating}"
+    if creator_id is not None:
+        query += f"\nFILTER recipe.creator_id == {creator_id}"
     if ingredients is not None:
         query += f"\nFILTER {ingredients} ALL IN recipe.ingredients[*].name"
     if sort_by == "id":

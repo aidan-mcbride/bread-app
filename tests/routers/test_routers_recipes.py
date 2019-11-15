@@ -11,7 +11,7 @@ from starlette.status import (
 from starlette.testclient import TestClient
 
 from api.main import app
-from tests.utils import create_random_recipe, get_test_user
+from tests.utils import create_random_recipe, create_random_user, get_test_user
 
 client = TestClient(app)
 
@@ -118,6 +118,19 @@ class TestReadRecipes:
         for recipe in response.json():
             actual = recipe["rating"]
             expected = rating
+            assert expected == actual
+
+    def test_read_filter_creator_id(self):
+        user = create_random_user()
+        for _ in range(4):
+            create_random_recipe()
+        for _ in range(4):
+            create_random_recipe(creator_id=user.id)
+        response = client.get(f"/recipes/?creator_id={user.id}")
+
+        for recipe in response.json():
+            actual = recipe["creator_id"]
+            expected = user.id
             assert expected == actual
 
     def test_read_filter_ingredient(self):
