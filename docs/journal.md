@@ -365,3 +365,13 @@ I noticed in the FastAPI example project - which I am using as a reference - tha
 I know it is silly that any user can get all the data for all other users via `GET:/users/`, and yet is prevented from getting data on other users when using `GET:/users/{id}`, and I would not do this on a real app. In the case of breadapp, however, the entire idea of authentication is silly, and was done entirely as a proof-of-concept.
 
 To solve this in a real app, you would restrict access to `GET:/users` to _superusers_, and regular users could only retrieve data about their user via `GET:/users/{id}`. Or, you would simply not have a `GET:/users` endpoint if you did not need it.
+
+---
+
+#### 11/16/19
+
+The core functionality of the REST API is essentially done at this point. I plan to add image upload at a later date, but I want to wait until I figure out my deployment situation so I know where I want to save images to.
+
+The next step is to build the client-side application; before that, however, I need to refactor the structure of the project to support having both a client and a server in the same repository, which requires reconfiguring my CI tools.
+
+I am removing pre-commit for now until I can find a solution for running pre-commit hooks for both the server and the client.
