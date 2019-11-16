@@ -43,7 +43,7 @@ _While, by design, the application will only have one user - and as such not req
 
 ##### Front-End
 
-- **[Vue.js 2.0](https://vuejs.org/):** My prefered JavaScript framework for web apps
+- **[Vue.js 2.0](https://vuejs.org/):** My preferred JavaScript framework for web apps
 
 ##### Back-End
 
