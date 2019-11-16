@@ -1,8 +1,8 @@
 """
-Functions for performing database operations(db ops)
+Functions for performing database operations(db ops) on recipes
 """
 
-from typing import List
+from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 from pyArango.database import Database
@@ -12,11 +12,11 @@ from api.database import get_collection
 from api.schemas.recipe import Recipe, RecipeCreate, RecipeCreateToDB, RecipeUpdate
 
 
-def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
+def create(db: Database, recipe_in: RecipeCreate, creator_id: int) -> Recipe:
     # get or create collection
     collection = get_collection(db=db, collection="Recipes")
     # convert request body to database model
-    recipe_to_db = RecipeCreateToDB(**recipe_in.dict())
+    recipe_to_db = RecipeCreateToDB(**recipe_in.dict(), creator_id=creator_id)
     # convert database model to json with fastapi tool
     recipe_dict = jsonable_encoder(recipe_to_db)
     # add record to db and save
@@ -27,11 +27,12 @@ def create_recipe(db: Database, recipe_in: RecipeCreate) -> Recipe:
     return reponse_data
 
 
-def read_recipes(
+def read_all(
     db: Database,
     skip: int = 0,
     limit: int = 100,
     rating: int = None,
+    creator_id: int = None,
     ingredients: List[str] = None,
     sort_by: str = "id",
     sort_dir: str = "ASC",
@@ -48,6 +49,8 @@ def read_recipes(
     query = "FOR recipe IN Recipes"
     if rating is not None:
         query += f"\nFILTER recipe.rating == {rating}"
+    if creator_id is not None:
+        query += f"\nFILTER recipe.creator_id == {creator_id}"
     if ingredients is not None:
         query += f"\nFILTER {ingredients} ALL IN recipe.ingredients[*].name"
     if sort_by == "id":
@@ -66,20 +69,19 @@ def read_recipes(
     return recipes
 
 
-def read_recipe(id: int, db: Database) -> Recipe:
+def read(id: int, db: Database) -> Optional[Recipe]:
     collection = get_collection(db=db, collection="Recipes")
     try:
         results = collection[id]
-        recipe_data = results.getStore()
-        id = recipe_data["_key"]
-        recipe = Recipe(**recipe_data, id=id)
     except DocumentNotFoundError:
-        recipe = None
-
+        return None
+    recipe_data = results.getStore()
+    id = recipe_data["_key"]
+    recipe = Recipe(**recipe_data, id=id)
     return recipe
 
 
-def update_recipe(id: int, recipe_update: RecipeUpdate, db: Database) -> Recipe:
+def update(id: int, recipe_update: RecipeUpdate, db: Database) -> Recipe:
     collection = get_collection(db=db, collection="Recipes")
 
     db_record = collection[id]
@@ -93,7 +95,7 @@ def update_recipe(id: int, recipe_update: RecipeUpdate, db: Database) -> Recipe:
     return response_data
 
 
-def delete_recipe(id: int, db: Database) -> Recipe:
+def delete(id: int, db: Database) -> Recipe:
     collection = get_collection(db=db, collection="Recipes")
     db_record = collection[id]
     recipe = Recipe(**db_record.getStore(), id=id)

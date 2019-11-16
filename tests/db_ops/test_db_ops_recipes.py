@@ -6,7 +6,7 @@ from api import db_ops
 from api.database import get_test_db
 from api.main import app
 from api.schemas.recipe import Recipe, RecipeUpdate
-from tests.utils import create_random_recipe, random_recipe
+from tests.utils import create_random_recipe, create_random_user, random_recipe
 
 client = TestClient(app)
 
@@ -14,15 +14,20 @@ client = TestClient(app)
 class TestCreateRecipe:
     def test_create(self):
         recipe_in = random_recipe()
+        creator = create_random_user()
 
-        actual = db_ops.create_recipe(db=get_test_db(), recipe_in=recipe_in)
+        actual = db_ops.recipes.create(
+            db=get_test_db(), recipe_in=recipe_in, creator_id=creator.id
+        )
         assert isinstance(actual, Recipe)
         # confirm that id added by db is valid
         assert hasattr(actual, "id")
         id = actual.dict()["id"]
         assert isinstance(id, int)
         # use actual's id for test recipe, since it is generated in db
-        expected = Recipe(**recipe_in.dict(), id=id, date_created=date.today())
+        expected = Recipe(
+            **recipe_in.dict(), id=id, date_created=date.today(), creator_id=creator.id
+        )
         assert expected == actual
 
 
@@ -30,7 +35,7 @@ class TestReadRecipes:
     def test_read(self):
         db = get_test_db()
         expected = create_random_recipe()
-        response = db_ops.read_recipes(db=db)
+        response = db_ops.recipes.read_all(db=db)
 
         # check that a list of recipes of the correct length is returned
         actual = response
@@ -53,8 +58,8 @@ class TestReadRecipes:
             create_random_recipe()
         skip = 3
         limit = 3
-        full_collection = db_ops.read_recipes(db=db)
-        response = db_ops.read_recipes(db=db, skip=skip, limit=limit)
+        full_collection = db_ops.recipes.read_all(db=db)
+        response = db_ops.recipes.read_all(db=db, skip=skip, limit=limit)
 
         actual = len(response)
         expected = limit
@@ -68,7 +73,7 @@ class TestReadRecipes:
         db = get_test_db()
         for _ in range(20):
             create_random_recipe()
-        response = db_ops.read_recipes(db=db, rating=3)
+        response = db_ops.recipes.read_all(db=db, rating=3)
 
         for recipe in response:
             assert getattr(recipe, "rating") == 3
@@ -78,7 +83,7 @@ class TestReadRecipes:
         for _ in range(10):
             create_random_recipe()
 
-        response = db_ops.read_recipes(db=db, ingredients=["flour"])
+        response = db_ops.recipes.read_all(db=db, ingredients=["flour"])
 
         for recipe in response:
             has_flour = False
@@ -92,7 +97,7 @@ class TestReadRecipes:
         for _ in range(10):
             create_random_recipe()
 
-        response = db_ops.read_recipes(db=db, ingredients=["flour", "salt"])
+        response = db_ops.recipes.read_all(db=db, ingredients=["flour", "salt"])
 
         for recipe in response:
             has_flour = False
@@ -105,13 +110,26 @@ class TestReadRecipes:
             assert has_flour is True
             assert has_salt is True
 
+    def test_read_filter_by_creator_id(self):
+        db = get_test_db()
+        user = create_random_user()
+        for _ in range(10):
+            create_random_recipe()
+        for _ in range(5):
+            create_random_recipe(creator_id=user.id)
+        response = db_ops.recipes.read_all(db=db, creator_id=user.id)
+
+        assert len(response) == 5
+        for recipe in response:
+            assert getattr(recipe, "creator_id") == user.id
+
     def test_read_sort_by(self):
         db = get_test_db()
         for _ in range(5):
             create_random_recipe()
 
         sort_by = "servings"
-        response = db_ops.read_recipes(db=db, sort_by=sort_by)
+        response = db_ops.recipes.read_all(db=db, sort_by=sort_by)
 
         # compare each item in list to the next item
         for i in range(len(response) - 1):
@@ -124,13 +142,13 @@ class TestReadRecipes:
         for _ in range(5):
             create_random_recipe()
 
-        response = db_ops.read_recipes(db=db)
+        response = db_ops.recipes.read_all(db=db)
         for i in range(len(response) - 1):
             a = getattr(response[i], "id")
             b = getattr(response[i + 1], "id")
             assert a <= b
 
-        response = db_ops.read_recipes(db=db, sort_dir="DESC")
+        response = db_ops.recipes.read_all(db=db, sort_dir="DESC")
         for i in range(len(response) - 1):
             a = getattr(response[i], "id")
             b = getattr(response[i + 1], "id")
@@ -141,13 +159,13 @@ class TestReadRecipe:
     def test_read(self):
         db = get_test_db()
         expected = create_random_recipe()
-        actual = db_ops.read_recipe(db=db, id=expected.id)
+        actual = db_ops.recipes.read(db=db, id=expected.id)
         assert expected == actual
 
     def test_read_not_found(self):
         db = get_test_db()
         expected = None
-        actual = db_ops.read_recipe(db=db, id=0)
+        actual = db_ops.recipes.read(db=db, id=0)
         assert expected == actual
 
 
@@ -161,7 +179,7 @@ class TestUpdateRecipe:
             notes=updated_notes, ingredients=updated_ingredients
         )
 
-        updated_recipe = db_ops.update_recipe(
+        updated_recipe = db_ops.recipes.update(
             db=db, id=start_recipe.id, recipe_update=recipe_update
         )
 
@@ -185,10 +203,10 @@ class TestDeleteRecipe:
         db = get_test_db()
         recipe = create_random_recipe()
 
-        actual = db_ops.delete_recipe(id=recipe.id, db=db)
+        actual = db_ops.recipes.delete(id=recipe.id, db=db)
         expected = recipe
         assert expected == actual
 
-        actual = db_ops.read_recipe(id=recipe.id, db=db)
+        actual = db_ops.recipes.read(id=recipe.id, db=db)
         expected = None
         assert expected == actual
